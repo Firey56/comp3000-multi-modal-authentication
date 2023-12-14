@@ -1,0 +1,12 @@
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe.config
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csprojAssemblyReference.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.FirstGUIAttempt.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.Properties.Resources.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.GenerateResource.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CoreCompileInputs.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.exe
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignInPage.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignUpForm.resources
