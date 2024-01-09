@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Data.SqlClient;
+using Amazon;
+using Amazon.Rekognition;
+using Amazon.Rekognition.Model;
 
 namespace FirstGUIAttempt
 {
@@ -74,7 +77,7 @@ namespace FirstGUIAttempt
                     if (IsValidFile(selectedFilePath))
                     {
                         // Display the selected image
-                        photoUploadButton.Image = Image.FromFile(selectedFilePath);
+                        photoUploadButton.Image = System.Drawing.Image.FromFile(selectedFilePath);
                         photoUploadButton.SizeMode = PictureBoxSizeMode.Zoom;
                         photoUploadLabelText.Text = selectedFilePath;
                     }
@@ -92,6 +95,38 @@ namespace FirstGUIAttempt
             string extension = Path.GetExtension(filePath)?.ToLower();
             return extension == ".png" || extension == ".jpeg";
         }
-       
+
+        static void FacialComparison(string storedFace, string newFace)
+        {
+            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("", "");
+
+            // Replace "YourRegion" with the AWS region where your Rekognition resource is located (e.g., us-east-1)
+            var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
+
+            // Replace "path/to/your/image.jpg" with the actual path to your image file
+            var image1Stream = new MemoryStream(File.ReadAllBytes(storedFace));
+            var image2Stream = new MemoryStream(File.ReadAllBytes(newFace));
+
+            var compareFacesRequest = new CompareFacesRequest
+            {
+                SourceImage = new Amazon.Rekognition.Model.Image
+                {
+                    Bytes = new MemoryStream(image1Stream.ToArray())
+                },
+                TargetImage = new Amazon.Rekognition.Model.Image
+                {
+                    Bytes = new MemoryStream(image2Stream.ToArray())
+                }
+            };
+            // Call Amazon Rekognition API to compare faces
+            var compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
+
+            // Process the response
+            foreach (var faceMatch in compareFacesResponse.FaceMatches)
+            {
+                Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+            }
+        }
+
     }
  }

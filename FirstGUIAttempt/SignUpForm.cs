@@ -16,7 +16,7 @@ namespace FirstGUIAttempt
     public partial class SignUpForm : Form
     {
         string selectedFilePath = null;
-        byte[] theImageData = null;
+        string base64Image = null;
         string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         public SignUpForm()
         {
@@ -66,7 +66,8 @@ namespace FirstGUIAttempt
                         Image theImage = signUpPictureBox.Image;
                         if (theImage != null)
                         {
-                            theImageData = Common.ImageToByteArray(theImage);
+                            byte[] theImageData = Common.ImageToByteArray(theImage);
+                            base64Image = Convert.ToBase64String(theImageData);
                         }
                         signUpPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                         signUpBrowseButtonLabel.Text = selectedFilePath;
@@ -99,7 +100,7 @@ namespace FirstGUIAttempt
             MessageBox.Show(passwordInput);
             if (usernameInput != null && passwordInput != null && selectedFilePath != null)
             {
-                InsertIntoUsers(usernameInput, passwordInput, selectedFilePath, theImageData);
+                InsertIntoUsers(usernameInput, passwordInput, base64Image);
             }
             else
             {
@@ -107,7 +108,7 @@ namespace FirstGUIAttempt
             }
 
         }
-        private void InsertIntoUsers(string username, string password, string filePath, byte[] theImage)
+        private void InsertIntoUsers(string username, string password, string base64Image)
         {
             try
             {
@@ -120,8 +121,8 @@ namespace FirstGUIAttempt
                     {
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
-                        string newFilePath = InsertPhotoIntoLocation(username, theImageData);
-                        command.Parameters.AddWithValue("@FilePath", newFilePath);
+                        //string newFilePath = InsertPhotoIntoLocation(username, theImageData);
+                        command.Parameters.AddWithValue("@FilePath", base64Image);
                         //MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();
@@ -134,7 +135,7 @@ namespace FirstGUIAttempt
                         {
                             MessageBox.Show("Failed to insert data into the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        
+
                     }
                 }
             }
@@ -143,17 +144,19 @@ namespace FirstGUIAttempt
                 MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        
-        private string InsertPhotoIntoLocation(string username, byte[] imageData)
-        {
-            string storagePath = @"C:\DissertationWork";
-            string savedFilePath = Path.Combine(storagePath, $"{username}.png");
-            MessageBox.Show(savedFilePath);
 
-            File.WriteAllBytes(savedFilePath, imageData);
-            return savedFilePath;
-        }
-       
+        /*        private string InsertPhotoIntoLocation(string username, byte[] imageData)
+                {
+                    string storagePath = @"C:\DissertationWork";
+                    string savedFilePath = Path.Combine(storagePath, $"{username}.png");
+                    MessageBox.Show(savedFilePath);
 
+                    File.WriteAllBytes(savedFilePath, imageData);
+                    return savedFilePath;
+                }
+
+
+            }
+        */
     }
 }

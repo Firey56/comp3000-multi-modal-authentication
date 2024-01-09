@@ -10,3 +10,15 @@ C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\D
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.pdb
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignInPage.resources
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignUpForm.resources
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csprojAssemblyReference.cache
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.FirstGUIAttempt.resources
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.Properties.Resources.resources
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignInPage.resources
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignUpForm.resources
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.GenerateResource.cache
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CoreCompileInputs.cache
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.exe
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.pdb
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe.config
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.pdb
