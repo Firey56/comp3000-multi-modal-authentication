@@ -52,7 +52,7 @@ namespace FirstGUIAttempt
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Image Files (*.png;*.jpeg)|*.png;*.jpeg|All Files (*.*)|*.*";
+                openFileDialog.Filter = "Image Files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All Files (*.*)|*.*";
                 openFileDialog.FilterIndex = 1;
                 openFileDialog.RestoreDirectory = true;
 
@@ -84,7 +84,7 @@ namespace FirstGUIAttempt
         private bool IsValidFile(string filePath) //Method which is called when the user uploads a photo to check that it is of valid format.
         {
             string extension = Path.GetExtension(filePath)?.ToLower();
-            return extension == ".png" || extension == ".jpeg";
+            return extension == ".png" || extension == ".jpeg" || extension == ".jpg";
         }
 
         private void browseButtonLabel(object sender, EventArgs e)

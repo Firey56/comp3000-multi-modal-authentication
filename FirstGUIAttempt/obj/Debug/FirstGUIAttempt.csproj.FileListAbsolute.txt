@@ -22,3 +22,10 @@ C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstG
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe.config
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.pdb
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Core.dll
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.dll
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Core.pdb
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Core.xml
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.pdb
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.xml
+C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CopyComplete
