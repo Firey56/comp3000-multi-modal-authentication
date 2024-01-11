@@ -170,43 +170,49 @@ namespace FirstGUIAttempt
                 }
             }
         }
+
+        //This function is called when using AWS API.
         static void FacialComparison(string databaseImage, string comparisonImage)
         {
-            MessageBox.Show("Now inside the facial comparison function");
+            //MessageBox.Show("Now inside the facial comparison function");
             var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("", "");
 
-            // Replace "YourRegion" with the AWS region where your Rekognition resource is located (e.g., us-east-1)
             var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
 
-            // Replace "path/to/your/image.jpg" with the actual path to your image file
-            byte[] byteArrayOfDatabaseImage = Convert.FromBase64String(databaseImage);
-            byte[] byteArrayOfComparisonImage = Convert.FromBase64String(comparisonImage);
-            var image1Stream = new MemoryStream(byteArrayOfDatabaseImage);
-            var image2Stream = new MemoryStream(byteArrayOfComparisonImage);
-
-            MessageBox.Show("Image memory streams created");
+            var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
+            var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
+            //MessageBox.Show("Image memory streams created");
             var compareFacesRequest = new CompareFacesRequest
             {
                 SourceImage = new Amazon.Rekognition.Model.Image
                 {
-                    Bytes = new MemoryStream(image1Stream.ToArray())
+                    Bytes = new MemoryStream(dbImage.ToArray())
                 },
                 TargetImage = new Amazon.Rekognition.Model.Image
                 {
-                    Bytes = new MemoryStream(image2Stream.ToArray())
+                    Bytes = new MemoryStream(uploadImage.ToArray())
                 },
                 SimilarityThreshold = 0,
             };
             // Call Amazon Rekognition API to compare faces
-            MessageBox.Show("Calling the API");
+
+            //MessageBox.Show("Calling the API");
             CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
 
             // Process the response
-            foreach (var faceMatch in compareFacesResponse.FaceMatches)
+            if(compareFacesResponse.FaceMatches.Count > 0)
             {
-                MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
-                Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+                foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
+                {
+                    MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
+                    //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+                }
             }
+            else
+            {
+                MessageBox.Show("Please use a photo with your face in it.");
+            }
+         
         }
 
     }
