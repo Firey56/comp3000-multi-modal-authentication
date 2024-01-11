@@ -36,7 +36,10 @@
             this.photoUploadButton = new System.Windows.Forms.PictureBox();
             this.photoUploadLabelText = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
+            this.takePhotoButton = new System.Windows.Forms.Button();
+            this.newImage = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.photoUploadButton)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.newImage)).BeginInit();
             this.SuspendLayout();
             // 
             // usernameInputTextBox
@@ -126,11 +129,32 @@
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.photoUploadButtonClick);
             // 
+            // takePhotoButton
+            // 
+            this.takePhotoButton.Location = new System.Drawing.Point(656, 493);
+            this.takePhotoButton.Name = "takePhotoButton";
+            this.takePhotoButton.Size = new System.Drawing.Size(98, 25);
+            this.takePhotoButton.TabIndex = 8;
+            this.takePhotoButton.Text = "Take Photo";
+            this.takePhotoButton.UseVisualStyleBackColor = true;
+            this.takePhotoButton.Click += new System.EventHandler(this.takePhotoButton_Click);
+            // 
+            // newImage
+            // 
+            this.newImage.Location = new System.Drawing.Point(761, 102);
+            this.newImage.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.newImage.Name = "newImage";
+            this.newImage.Size = new System.Drawing.Size(320, 240);
+            this.newImage.TabIndex = 9;
+            this.newImage.TabStop = false;
+            // 
             // SignInPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.newImage);
+            this.Controls.Add(this.takePhotoButton);
             this.Controls.Add(this.browseButton);
             this.Controls.Add(this.photoUploadLabelText);
             this.Controls.Add(this.photoUploadButton);
@@ -144,6 +168,7 @@
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.SignInPage_Load);
             ((System.ComponentModel.ISupportInitialize)(this.photoUploadButton)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.newImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -159,5 +184,7 @@
         private System.Windows.Forms.PictureBox photoUploadButton;
         private System.Windows.Forms.Label photoUploadLabelText;
         private System.Windows.Forms.Button browseButton;
+        private System.Windows.Forms.Button takePhotoButton;
+        private System.Windows.Forms.PictureBox newImage;
     }
 }

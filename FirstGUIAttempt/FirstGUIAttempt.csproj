@@ -68,12 +68,6 @@
     <Compile Include="FirstGUIAttempt.Designer.cs">
       <DependentUpon>FirstGUIAttempt.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="SignInPage.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -24,6 +24,7 @@ namespace FirstGUIAttempt
         {
             Application.EnableVisualStyles();
             InitializeComponent();
+            newImage.Visible = true;
         }
         private VideoCaptureDevice videoSource;
         string selectedFilePath = null;
@@ -62,6 +63,7 @@ namespace FirstGUIAttempt
 
         private void photoUploadLabel(object sender, EventArgs e)
         {
+
 
         }
 
@@ -117,6 +119,7 @@ namespace FirstGUIAttempt
         /// </summary>
         private void InitializeWebcam()
         {
+            photoUploadButton.Visible = true;
             // Get the list of available video devices (webcams)
             FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
@@ -143,19 +146,12 @@ namespace FirstGUIAttempt
         /// <param name="eventArgs"></param>
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            // Get the original frame from the webcam
             Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
-
-            // Calculate the size to fit the entire frame within the PictureBox
             Size newSize = CalculateSizeToFit(originalFrame.Size, photoUploadButton.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
-
-            // Resize the frame
             Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
-
-            // Display the resized frame in the PictureBox
             photoUploadButton.Image = resizedFrame;
 
-            // Dispose the original frame to avoid memory leaks
+            // Dispose of old frame
             originalFrame.Dispose();
         }
         /// <summary>
@@ -219,10 +215,42 @@ namespace FirstGUIAttempt
             base.OnFormClosing(e);
         }
         /// <summary>
-        /// Checks that the uploaded file has an image format that is widely accepted.
+        /// Function for when the user clicks "Take Photo".
+        /// This creates a bitmap of the user image and then converts this into a base64 string for face comparison.
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void takePhotoButton_Click(object sender, EventArgs e)
+        {
+            // Check if there is an image in the PictureBox
+            if (photoUploadButton.Image != null)
+            {
+                // Capture the current image from the PictureBox
+                Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
+                photoUploadButton.Visible = false;
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    // Save the Bitmap to the MemoryStream
+                    capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+                    // Convert the MemoryStream to a byte array
+                    byte[] byteArray = memoryStream.ToArray();
+
+                    // Convert the byte array to a Base64 string
+                    comparisonImageBase64 = Convert.ToBase64String(byteArray);
+                }
+                newImage.Image = capturedImage;
+                newImage.Visible = true;
+
+                // Dispose the captured image to avoid memory leaks
+                capturedImage.Dispose();
+            }
+            else
+            {
+                MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
+            }
+        }
         private bool IsValidFile(string filePath) //Method which is called when the user uploads a photo to check that it is of valid format.
         {
             string extension = Path.GetExtension(filePath)?.ToLower();
@@ -356,6 +384,5 @@ namespace FirstGUIAttempt
             }
          
         }
-
     }
  }

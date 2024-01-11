@@ -30,10 +30,5 @@ namespace FirstGUIAttempt
 
         }
 
-        private void temporary_Click(object sender, EventArgs e)
-        {
-            var goToTemporary = new Form1();
-            goToTemporary.Show();
-        }
     }
 }
