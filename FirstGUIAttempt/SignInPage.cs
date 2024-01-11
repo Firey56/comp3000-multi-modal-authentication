@@ -194,11 +194,12 @@ namespace FirstGUIAttempt
                 TargetImage = new Amazon.Rekognition.Model.Image
                 {
                     Bytes = new MemoryStream(image2Stream.ToArray())
-                }
+                },
+                SimilarityThreshold = 0,
             };
             // Call Amazon Rekognition API to compare faces
             MessageBox.Show("Calling the API");
-            var compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
+            CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
 
             // Process the response
             foreach (var faceMatch in compareFacesResponse.FaceMatches)
