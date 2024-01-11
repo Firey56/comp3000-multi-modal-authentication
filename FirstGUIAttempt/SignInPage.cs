@@ -317,7 +317,7 @@ namespace FirstGUIAttempt
         static void FacialComparison(string databaseImage, string comparisonImage)
         {
             //MessageBox.Show("Now inside the facial comparison function");
-            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
+            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("", "");
 
             var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
 
