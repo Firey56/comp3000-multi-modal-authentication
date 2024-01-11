@@ -29,3 +29,28 @@ C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.pdb
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.xml
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CopyComplete
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csprojAssemblyReference.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.FirstGUIAttempt.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.Properties.Resources.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignInPage.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignUpForm.resources
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.GenerateResource.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CoreCompileInputs.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.exe
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe.config
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.exe
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\FirstGUIAttempt.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AForge.dll
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AForge.Video.DirectShow.dll
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AForge.Video.dll
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Core.dll
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.dll
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AForge.xml
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AForge.Video.xml
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AForge.Video.DirectShow.xml
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Core.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Core.xml
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.xml
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CopyComplete

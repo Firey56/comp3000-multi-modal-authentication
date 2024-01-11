@@ -31,6 +31,7 @@
             this.signIn = new System.Windows.Forms.Button();
             this.signUp = new System.Windows.Forms.Button();
             this.SignInPage = new System.Windows.Forms.PageSetupDialog();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // signIn
@@ -53,9 +54,20 @@
             this.signUp.UseVisualStyleBackColor = true;
             this.signUp.Click += new System.EventHandler(this.signUp_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(357, 362);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.temporary_Click);
+            // 
             // FirstGUIAttempt
             // 
             this.ClientSize = new System.Drawing.Size(836, 515);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.signUp);
             this.Controls.Add(this.signIn);
             this.Name = "FirstGUIAttempt";
@@ -68,6 +80,7 @@
         private System.Windows.Forms.Button signIn;
         private System.Windows.Forms.Button signUp;
         private System.Windows.Forms.PageSetupDialog SignInPage;
+        private System.Windows.Forms.Button button1;
     }
 }
 
