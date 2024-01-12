@@ -24,7 +24,8 @@ namespace FirstGUIAttempt
         {
             Application.EnableVisualStyles();
             InitializeComponent();
-            newImage.Visible = true;
+            InitializeWebcam();
+            passwordInputTextBox.TextChanged += passwordInputTextBox_TextChanged;
         }
         private VideoCaptureDevice videoSource;
         string selectedFilePath = null;
@@ -78,9 +79,9 @@ namespace FirstGUIAttempt
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        private void photoUploadButtonClick(object sender, EventArgs e)
-        {
-            InitializeWebcam();
+        //private void photoUploadButtonClick(object sender, EventArgs e)
+        //{
+            //InitializeWebcam();
             /*using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "Image Files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All Files (*.*)|*.*";
@@ -113,7 +114,7 @@ namespace FirstGUIAttempt
 
             }
             */
-        }
+        //}
         /// <summary>
         /// This function allows for the webcam to be accessible using a Video Source using AForge libraries.
         /// </summary>
@@ -154,6 +155,7 @@ namespace FirstGUIAttempt
             // Dispose of old frame
             originalFrame.Dispose();
         }
+
         /// <summary>
         /// This function checks the width and height of both the PictureBox and the video feed and changes the aspect ratio
         /// to fit the PictureBox
@@ -194,7 +196,7 @@ namespace FirstGUIAttempt
             {
                 // Maintain the aspect ratio of the original image and apply high-quality interpolation
                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(originalImage, 0, 0, newSize.Width, newSize.Height);
+                g.DrawImage(originalImage,0,0,newSize.Width, newSize.Height);
             }
 
             return resizedImage;
@@ -227,7 +229,8 @@ namespace FirstGUIAttempt
             {
                 // Capture the current image from the PictureBox
                 Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
-                photoUploadButton.Visible = false;
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
 
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
@@ -240,8 +243,6 @@ namespace FirstGUIAttempt
                     // Convert the byte array to a Base64 string
                     comparisonImageBase64 = Convert.ToBase64String(byteArray);
                 }
-                newImage.Image = capturedImage;
-                newImage.Visible = true;
 
                 // Dispose the captured image to avoid memory leaks
                 capturedImage.Dispose();
@@ -257,7 +258,12 @@ namespace FirstGUIAttempt
             return extension == ".png" || extension == ".jpeg" || extension == ".jpg";
         }
 
-       
+        private void passwordInputTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // Your code to handle the TextChanged event goes here
+            Console.WriteLine("New character pressed");
+        }
+
         /// <summary>
         /// This section assigns our variables from the user input text and checks if they've been input
         /// </summary>
