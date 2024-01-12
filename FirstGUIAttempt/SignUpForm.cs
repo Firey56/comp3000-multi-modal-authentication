@@ -117,12 +117,12 @@ namespace FirstGUIAttempt
                     connection.Open();
 
                     // Insert data into the database
-                    using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, filePath) VALUES (@Username, @Password, @FilePath)", connection))
+                    using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
                     {
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
                         //string newFilePath = InsertPhotoIntoLocation(username, theImageData);
-                        command.Parameters.AddWithValue("@FilePath", base64Image);
+                        command.Parameters.AddWithValue("@image", base64Image);
                         //MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();

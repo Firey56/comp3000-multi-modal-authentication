@@ -15,6 +15,7 @@ using Amazon.Rekognition.Model;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using System.Drawing.Drawing2D;
+using System.Diagnostics;
 
 namespace FirstGUIAttempt
 {
@@ -25,12 +26,16 @@ namespace FirstGUIAttempt
             Application.EnableVisualStyles();
             InitializeComponent();
             InitializeWebcam();
-            passwordInputTextBox.TextChanged += passwordInputTextBox_TextChanged;
+            passwordInputTextBox.KeyDown += password_KeyPress;
+            //passwordInputTextBox.KeyUp += password_KeyUp;
         }
         private VideoCaptureDevice videoSource;
         string selectedFilePath = null;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         string comparisonImageBase64 = null;
+        static List<long> keystrokePattern = new List<long>();
+        static Stopwatch keyboardTimer = new Stopwatch();
+
 
         private void userNameInput(object sender, EventArgs e)
         {
@@ -257,12 +262,35 @@ namespace FirstGUIAttempt
             string extension = Path.GetExtension(filePath)?.ToLower();
             return extension == ".png" || extension == ".jpeg" || extension == ".jpg";
         }
-
-        private void passwordInputTextBox_TextChanged(object sender, EventArgs e)
+        /// <summary>
+        /// This function triggers whenever a key is detected in down state in the textPassword box.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void password_KeyPress(object sender, KeyEventArgs e)
         {
-            // Your code to handle the TextChanged event goes here
-            Console.WriteLine("New character pressed");
+            //Console.WriteLine("Down");
+            if (!keyboardTimer.IsRunning)
+            {
+                keyboardTimer.Start();
+            }
+            else
+            {
+                long currentTime = keyboardTimer.ElapsedMilliseconds;
+                keystrokePattern.Add(currentTime);
+            }
+
+            // Display or process the keystroke pattern as needed
+            Console.WriteLine($"Recorded: Keystroke");
         }
+
+
+        /*private static void password_KeyUp(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine("Up");
+        }
+        */
+
 
         /// <summary>
         /// This section assigns our variables from the user input text and checks if they've been input
@@ -271,6 +299,24 @@ namespace FirstGUIAttempt
         {
             string usernameInput = usernameInputTextBox.Text;
             string passwordInput = passwordInputTextBox.Text;
+            //Makes the list of the timings of the keystroke
+            List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
+            finalKeystrokePattern.Add("Keystroke");//Initial keystroke
+            long x = 0;//Set value as 0 seconds before first keystroke
+            foreach (long value in keystrokePattern)
+            { 
+                long y = value;//Sets equal to the "currentTime" variable previously added
+                //Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
+                
+                finalKeystrokePattern.Add((y-x).ToString());//Adds in the time difference between 
+                finalKeystrokePattern.Add("Keystroke");
+                x = y;//This will be our new subtraction time between keystrokes.
+
+            }
+            foreach(string value in finalKeystrokePattern)
+            {
+                Console.WriteLine(value);
+            }
             //MessageBox.Show(usernameInput);
             //MessageBox.Show(passwordInput);
             if (usernameInput != null && passwordInput != null && comparisonImageBase64 != null)
@@ -319,7 +365,7 @@ namespace FirstGUIAttempt
                                //The reader object stores the database values as their headers
                                 string databaseUsername = reader["Username"].ToString();
                                 string databasePassword = reader["Password"].ToString();
-                                string databaseImage = reader["FilePath"].ToString();
+                                string databaseImage = reader["image"].ToString();
                                 if(databasePassword == password)
                                 {
                                     //MessageBox.Show("Passwords matched");
@@ -351,7 +397,7 @@ namespace FirstGUIAttempt
         static void FacialComparison(string databaseImage, string comparisonImage)
         {
             //MessageBox.Show("Now inside the facial comparison function");
-            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("", "");
+            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
 
             var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
 

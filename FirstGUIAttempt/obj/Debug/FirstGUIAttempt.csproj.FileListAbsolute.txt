@@ -29,7 +29,6 @@ C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.pdb
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\AWSSDK.Rekognition.xml
 C:\COMP2002\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CopyComplete
-C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csprojAssemblyReference.cache
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.FirstGUIAttempt.resources
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.Properties.Resources.resources
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.SignInPage.resources
@@ -79,3 +78,5 @@ F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIA
 F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.CopyComplete
 F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.exe
 F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.pdb
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.AssemblyReference.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.SuggestedBindingRedirects.cache
