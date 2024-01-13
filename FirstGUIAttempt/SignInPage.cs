@@ -280,6 +280,12 @@ namespace FirstGUIAttempt
         /// <param name="e"></param>
         private static void password_KeyPress(object sender, KeyEventArgs e)
         {
+            //This section now requires a check if the key pressed is "Backspace".
+            //If backspace clicked, must remove 2 items from list for every click.
+            //Set timer to the last value in the list.
+            //If CTRL + Backspace is clicked, reset timer and reset list.
+
+
             //Console.WriteLine("Down");
             if (!keyboardTimer.IsRunning)
             {
@@ -309,8 +315,8 @@ namespace FirstGUIAttempt
         private void submitButton() 
         {
             string usernameInput = usernameInputTextBox.Text;
-            string passwordInput = passwordInputTextBox.Text;
-            string passwordHash = HashPassword(passwordInput);
+            string hashedPassword = HashPassword(passwordInputTextBox.Text);
+
             
             //Makes the list of the timings of the keystroke
             List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
@@ -332,10 +338,10 @@ namespace FirstGUIAttempt
             }
             //MessageBox.Show(usernameInput);
             //MessageBox.Show(passwordInput);
-            if (usernameInput != null && passwordInput != null && comparisonImageBase64 != null)
+            if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
             {
                 //MessageBox.Show("We are inside the SubmitButton function");
-                UserSignIn(usernameInput, passwordInput, comparisonImageBase64);
+                UserSignIn(usernameInput, hashedPassword, comparisonImageBase64);
             }
             else
             {
@@ -343,14 +349,33 @@ namespace FirstGUIAttempt
             }
         }
 
-        private string HashPassword(string input){
-            byte[] temporaryInput;
-            byte[] temporaryHash;
+        /// <summary>
+        /// This function hashes the password using SHA256 hashing and then gets it converted to a string for storage and comparison.
+        /// 
+        /// This function could be further enhanced using Argon2, but would need to think about salt generation and storage.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        private string HashPassword(string password)
+        {
+            byte[] passwordAsBytes;
+            byte[] calculatedHash;
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // Convert the input string to bytes
+                passwordAsBytes = Encoding.UTF8.GetBytes(password);
 
-            temporaryInput = ASCIIEncoding.ASCII.GetBytes(input);
-            temporaryHash = new MD5CryptoServiceProvider().ComputeHash(temporaryInput);
-            return temporaryHash.ToString();
+                // Calculate the SHA-256 hash
+                calculatedHash = sha256.ComputeHash(passwordAsBytes);
+
+                // Convert the hash to a hexadecimal string
+                string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
+                Console.WriteLine(hashedInput);
+                //MessageBox.Show("Hashed output should be out");
+                return hashedInput;
+            }
         }
+
         /// <summary>
         /// This section is used to actually complete the user sign in. It establishes a database connection
         /// and selects all the data available for the user. This will be their UID, username, hashed password and b64 of the image.

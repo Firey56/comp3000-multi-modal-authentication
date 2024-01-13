@@ -15,12 +15,12 @@ using CsvHelper.Configuration;
 using System.Diagnostics;
 using AForge.Video.DirectShow;
 using AForge.Video;
+using System.Security.Cryptography;
 
 namespace FirstGUIAttempt
 {
     public partial class SignUpForm : Form
     {
-        string selectedFilePath = null;
         string base64Image = null;
         string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         static List<long> keystrokePattern = new List<long>();
@@ -119,6 +119,10 @@ namespace FirstGUIAttempt
         private static void password_KeyPress(object sender, KeyEventArgs e)
         {
             //Console.WriteLine("Down");
+            //This section now requires a check if the key pressed is "Backspace".
+            //If backspace clicked, must remove 2 items from list for every click.
+            //Set timer to the last value in the list.
+            //If CTRL + Backspace is clicked, reset timer and reset list.
             if (!keyboardTimer.IsRunning)
             {
                 keyboardTimer.Start();
@@ -132,28 +136,41 @@ namespace FirstGUIAttempt
             // Display or process the keystroke pattern as needed
             Console.WriteLine($"Recorded: Keystroke");
         }
-        private void signUpUsernameTextbox(object sender, EventArgs e)
+        /// <summary>
+        /// This function hashes the password using SHA256 hashing and then gets it converted to a string for storage and comparison.
+        /// 
+        /// This function could be further enhanced using Argon2, but would need to think about salt generation and storage.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        private string HashPassword(string password)
         {
+            byte[] passwordAsBytes;
+            byte[] calculatedHash;
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // Convert the input string to bytes
+                passwordAsBytes= Encoding.UTF8.GetBytes(password);
 
+                // Calculate the SHA-256 hash
+                calculatedHash = sha256.ComputeHash(passwordAsBytes);
+
+                // Convert the hash to a hexadecimal string
+                string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
+                Console.WriteLine(hashedInput);
+                //MessageBox.Show("Hashed output should be out");
+                return hashedInput;
+            }
         }
 
-
-        private void signUpPasswordTextBox(object sender, EventArgs e)
-        {
-        }
-
-
-        private void signUpFormPictureBox(object sender, EventArgs e)
-        {
-
-        }
+ 
 
         private void submitButton(object sender, EventArgs e)
         {
             string usernameInput = signUpFormUsernameTextBox.Text;
-            string passwordInput = signUpFormPasswordTextBox.Text;
-            MessageBox.Show(usernameInput);
-            MessageBox.Show(passwordInput);
+            string hashedPassword = HashPassword(signUpFormPasswordTextBox.Text);
+            //MessageBox.Show(usernameInput);
+            //MessageBox.Show(passwordInput);
             finalKeystrokePattern.Add("Keystroke");//Initial keystroke
             long x = 0;//Set value as 0 seconds before first keystroke
             foreach (long value in keystrokePattern)
@@ -170,10 +187,10 @@ namespace FirstGUIAttempt
             {
                 Console.WriteLine(value);
             }
-            if (usernameInput != null && passwordInput != null && selectedFilePath != null)
+            if (usernameInput != null && hashedPassword != null && base64Image != null)
             {
                 CreateCSV(usernameInput);
-                InsertIntoUsers(usernameInput, passwordInput, base64Image);
+                InsertIntoUsers(usernameInput, hashedPassword, base64Image);
             }
             else
             {
@@ -184,12 +201,7 @@ namespace FirstGUIAttempt
 
         private void CreateCSV(string username)
         {
-            string csvFilePath = @"C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\CSV\" + username + ".csv";
-
-            var csvConfig = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = false
-            };
+            string csvFilePath = @"C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\CSV\" + username + ".csv"
             string csvWritableFormat = string.Join(",", finalKeystrokePattern);
             Console.WriteLine(csvWritableFormat);
             using (var csvWriter = new StreamWriter(csvFilePath, append: true))
@@ -263,5 +275,22 @@ namespace FirstGUIAttempt
                 MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
             }
         }
+
+        private void signUpUsernameTextbox(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void signUpPasswordTextBox(object sender, EventArgs e)
+        {
+        }
+
+
+        private void signUpFormPictureBox(object sender, EventArgs e)
+        {
+
+        }
     }
+
 }
