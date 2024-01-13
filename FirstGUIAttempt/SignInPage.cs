@@ -38,6 +38,7 @@ namespace FirstGUIAttempt
         static List<long> keystrokePattern = new List<long>();
         static Stopwatch keyboardTimer = new Stopwatch();
         bool pasteFlag = false;
+        int loginAttempt = 0;
 
 
         private void userNameInput(object sender, EventArgs e)
@@ -71,27 +72,6 @@ namespace FirstGUIAttempt
                     Console.WriteLine("Pasted info and clipboard are the same");
                 }
             }
-        }
-
-        private void SignInPage_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void signIn(object sender, EventArgs e)
-        {
-            submitButton();
-        }
-
-        private void photoUploadLabel(object sender, EventArgs e)
-        {
-
-
-        }
-
-        private void photoUpload(object sender, EventArgs e)
-        {
-
         }
         /// <summary>
         /// This is for the browse button that will be later removed when the seamless image selection is implemented.
@@ -136,12 +116,300 @@ namespace FirstGUIAttempt
             }
             */
         //}
+        
+        /// <summary>
+        /// Function for when the user clicks "Take Photo".
+        /// This creates a bitmap of the user image and then converts this into a base64 string for face comparison.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void takePhotoButton_Click(object sender, EventArgs e)
+        {
+            // Check if there is an image in the PictureBox
+            if (photoUploadButton.Image != null)
+            {
+                // Capture the current image from the PictureBox
+                Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    // Save the Bitmap to the MemoryStream
+                    capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+                    // Convert the MemoryStream to a byte array
+                    byte[] byteArray = memoryStream.ToArray();
+
+                    // Convert the byte array to a Base64 string
+                    comparisonImageBase64 = Convert.ToBase64String(byteArray);
+                }
+
+                // Dispose the captured image
+                capturedImage.Dispose();
+            }
+            else
+            {
+                MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
+            }
+        }
+        /// <summary>
+        /// This function triggers whenever a key is detected in down state in the textPassword box.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void password_KeyPress(object sender, KeyEventArgs e)
+        {
+            //This section now requires a check if the key pressed is "Backspace".
+            //If backspace clicked, must remove 2 items from list for every click.
+            //Set timer to the last value in the list.
+            //If CTRL + Backspace is clicked, reset timer and reset list.
+            //If CTRL + A + Backspace is clicked - can I check for if field empty on KeyPress?
+
+
+            //Console.WriteLine("Down");
+            if (!keyboardTimer.IsRunning)
+            {
+                keyboardTimer.Start();
+            }
+            else
+            {
+                long currentTime = keyboardTimer.ElapsedMilliseconds;
+                keystrokePattern.Add(currentTime);
+            }
+
+            // Display or process the keystroke pattern as needed
+            Console.WriteLine($"Recorded: Keystroke");
+        }
+
+
+        /*private static void password_KeyUp(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine("Up");
+        }
+        */
+
+
+        /// <summary>
+        /// This section assigns our variables from the user input text and checks if they've been input
+        /// </summary>
+        private void submit(object sender, EventArgs e) 
+        {
+            string usernameInput = usernameInputTextBox.Text;
+            string hashedPassword = HashPassword(passwordInputTextBox.Text);
+
+            
+            //Makes the list of the timings of the keystroke
+            List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
+            finalKeystrokePattern.Add("Keystroke");//Initial keystroke
+            long x = 0;//Set value as 0 seconds before first keystroke
+            foreach (long value in keystrokePattern)
+            { 
+                long y = value;//Sets equal to the "currentTime" variable previously added
+                //Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
+                
+                finalKeystrokePattern.Add((y-x).ToString());//Adds in the time difference between 
+                finalKeystrokePattern.Add("Keystroke");
+                x = y;//This will be our new subtraction time between keystrokes.
+
+            }
+            foreach(string value in finalKeystrokePattern)
+            {
+                Console.WriteLine(value);
+            }
+            //MessageBox.Show(usernameInput);
+            //MessageBox.Show(passwordInput);
+            if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
+            {
+                //MessageBox.Show("We are inside the SubmitButton function");
+                UserSignIn(usernameInput, hashedPassword, comparisonImageBase64);
+            }
+            else
+            {
+                MessageBox.Show("Please fill in all fields!");
+            }
+        }
+
+       
+
+        /// <summary>
+        /// This section is used to actually complete the user sign in. It establishes a database connection
+        /// and selects all the data available for the user. This will be their UID, username, hashed password and b64 of the image.
+        /// 
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="comparisonImage"></param>
+        private void UserSignIn(string username, string password, string comparisonImage)
+        {
+            //MessageBox.Show("We are inside the UserSignIn Function");
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                //MessageBox.Show("Connection Opened");
+                string sqlQuery = "SELECT * FROM Users WHERE Username = @Username";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    // Add parameters to the command
+                    command.Parameters.AddWithValue("@Username", username);
+                    //MessageBox.Show("Parameters set.");
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        //MessageBox.Show("DataReader executed");
+                        // Check if there are rows returned from the query
+                        if (reader.HasRows)
+                        {
+                           // MessageBox.Show("Has Rows!");
+                            // Iterate through the result set using the SqlDataReader
+                            while (reader.Read())
+                            {
+                               // MessageBox.Show("Now assigning values");
+                               //The reader object stores the database values as their headers
+
+                                //This section can be probably changed to be a stored procedure to be more secure.
+                                string databaseUsername = reader["Username"].ToString();
+                                string databasePassword = reader["Password"].ToString();
+                                string databaseImage = reader["image"].ToString();
+                                if(databasePassword == password)
+                                {
+                                    //MessageBox.Show("Passwords matched");
+                                    List<float> similarity = new List<float>(FacialComparison(databaseImage, comparisonImage));
+                                    float totalSimilarity = 0;
+                                    if(similarity.Count > 0)
+                                    {
+                                        foreach (float value in similarity)
+                                        {
+                                            totalSimilarity += value;
+                                        }
+                                        //Code for when there definitely was a face match
+                                        if ((totalSimilarity / similarity.Count) > 95)
+                                        { 
+                                            //Complete keystroke analysis and live person analysis (i can't remember what it's called)
+                                        }
+                                        else
+                                        {
+                                            //For if average isn't high enough.
+                                            MessageBox.Show("Please take a new photo.");
+                                            loginAttempt++;
+                                            if(loginAttempt >= 5)
+                                            {
+                                                //Create procedure to lock account?
+                                            }
+                                        }
+    
+                                    }
+                                    else
+                                    {
+                                        //Code for when there was no face matches.
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Password is Incorrect");
+                                    //Code for when password is incorrect
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No records found for the given ID.");
+                        }
+                    }
+                }
+                connection.Close();
+            }
+        }
+
+/// <summary>
+/// Facial Comparison Function.
+/// Takes the two images, one stored in database for user and the one that is being uploaded and compares them
+/// Both images are converted into MemoryStreams from Base64 and sent to AWS Facial Rekognition.
+/// This sends back a similiarty % which can be then used for furhter processing.
+/// </summary>
+/// <param name="databaseImage"></param>
+/// <param name="comparisonImage"></param>
+        //This function is called when using AWS API.
+        static List<float> FacialComparison(string databaseImage, string comparisonImage)
+        {
+            //MessageBox.Show("Now inside the facial comparison function");
+            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
+
+            var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
+
+            var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
+            var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
+            //MessageBox.Show("Image memory streams created");
+            var compareFacesRequest = new CompareFacesRequest
+            {
+                SourceImage = new Amazon.Rekognition.Model.Image
+                {
+                    Bytes = new MemoryStream(dbImage.ToArray())
+                },
+                TargetImage = new Amazon.Rekognition.Model.Image
+                {
+                    Bytes = new MemoryStream(uploadImage.ToArray())
+                },
+                SimilarityThreshold = 0,
+            };
+            // Call Amazon Rekognition API to compare faces
+
+            //MessageBox.Show("Calling the API");
+            CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
+            List<float> faceMatchSimilarities = new List<float>();
+            // Process the response
+            if (compareFacesResponse.FaceMatches.Count > 0)
+            {
+                
+                foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
+                {
+
+                    faceMatchSimilarities.Add(faceMatch.Similarity);
+                    MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
+                    return faceMatchSimilarities;
+                    //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please use a photo with your face in it.");
+                return null;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// This function hashes the password using SHA256 hashing and then gets it converted to a string for storage and comparison.
+        /// 
+        /// This function could be further enhanced using Argon2, but would need to think about salt generation and storage.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        private string HashPassword(string password)
+        {
+            byte[] passwordAsBytes;
+            byte[] calculatedHash;
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // Convert the input string to bytes
+                passwordAsBytes = Encoding.UTF8.GetBytes(password);
+
+                // Calculate the SHA-256 hash
+                calculatedHash = sha256.ComputeHash(passwordAsBytes);
+
+                // Convert the hash to a hexadecimal string
+                string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
+                Console.WriteLine(hashedInput);
+                //MessageBox.Show("Hashed output should be out");
+                return hashedInput;
+            }
+        }
         /// <summary>
         /// This function allows for the webcam to be accessible using a Video Source using AForge libraries.
         /// </summary>
         private void InitializeWebcam()
         {
-            photoUploadButton.Visible = true;
             // Get the list of available video devices (webcams)
             FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
@@ -217,7 +485,7 @@ namespace FirstGUIAttempt
             {
                 // Maintain the aspect ratio of the original image and apply high-quality interpolation
                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(originalImage,0,0,newSize.Width, newSize.Height);
+                g.DrawImage(originalImage, 0, 0, newSize.Width, newSize.Height);
             }
 
             return resizedImage;
@@ -236,276 +504,6 @@ namespace FirstGUIAttempt
             }
 
             base.OnFormClosing(e);
-        }
-        /// <summary>
-        /// Function for when the user clicks "Take Photo".
-        /// This creates a bitmap of the user image and then converts this into a base64 string for face comparison.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void takePhotoButton_Click(object sender, EventArgs e)
-        {
-            // Check if there is an image in the PictureBox
-            if (photoUploadButton.Image != null)
-            {
-                // Capture the current image from the PictureBox
-                Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
-                videoSource.SignalToStop();
-                videoSource.WaitForStop();
-
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    // Save the Bitmap to the MemoryStream
-                    capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-
-                    // Convert the MemoryStream to a byte array
-                    byte[] byteArray = memoryStream.ToArray();
-
-                    // Convert the byte array to a Base64 string
-                    comparisonImageBase64 = Convert.ToBase64String(byteArray);
-                }
-
-                // Dispose the captured image
-                capturedImage.Dispose();
-            }
-            else
-            {
-                MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
-            }
-        }
-        /// <summary>
-        /// This function triggers whenever a key is detected in down state in the textPassword box.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void password_KeyPress(object sender, KeyEventArgs e)
-        {
-            //This section now requires a check if the key pressed is "Backspace".
-            //If backspace clicked, must remove 2 items from list for every click.
-            //Set timer to the last value in the list.
-            //If CTRL + Backspace is clicked, reset timer and reset list.
-
-
-            //Console.WriteLine("Down");
-            if (!keyboardTimer.IsRunning)
-            {
-                keyboardTimer.Start();
-            }
-            else
-            {
-                long currentTime = keyboardTimer.ElapsedMilliseconds;
-                keystrokePattern.Add(currentTime);
-            }
-
-            // Display or process the keystroke pattern as needed
-            Console.WriteLine($"Recorded: Keystroke");
-        }
-
-
-        /*private static void password_KeyUp(object sender, KeyEventArgs e)
-        {
-            Console.WriteLine("Up");
-        }
-        */
-
-
-        /// <summary>
-        /// This section assigns our variables from the user input text and checks if they've been input
-        /// </summary>
-        private void submitButton() 
-        {
-            string usernameInput = usernameInputTextBox.Text;
-            string hashedPassword = HashPassword(passwordInputTextBox.Text);
-
-            
-            //Makes the list of the timings of the keystroke
-            List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
-            finalKeystrokePattern.Add("Keystroke");//Initial keystroke
-            long x = 0;//Set value as 0 seconds before first keystroke
-            foreach (long value in keystrokePattern)
-            { 
-                long y = value;//Sets equal to the "currentTime" variable previously added
-                //Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
-                
-                finalKeystrokePattern.Add((y-x).ToString());//Adds in the time difference between 
-                finalKeystrokePattern.Add("Keystroke");
-                x = y;//This will be our new subtraction time between keystrokes.
-
-            }
-            foreach(string value in finalKeystrokePattern)
-            {
-                Console.WriteLine(value);
-            }
-            //MessageBox.Show(usernameInput);
-            //MessageBox.Show(passwordInput);
-            if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
-            {
-                //MessageBox.Show("We are inside the SubmitButton function");
-                UserSignIn(usernameInput, hashedPassword, comparisonImageBase64);
-            }
-            else
-            {
-                MessageBox.Show("Please fill in all fields!");
-            }
-        }
-
-        /// <summary>
-        /// This function hashes the password using SHA256 hashing and then gets it converted to a string for storage and comparison.
-        /// 
-        /// This function could be further enhanced using Argon2, but would need to think about salt generation and storage.
-        /// </summary>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        private string HashPassword(string password)
-        {
-            byte[] passwordAsBytes;
-            byte[] calculatedHash;
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                // Convert the input string to bytes
-                passwordAsBytes = Encoding.UTF8.GetBytes(password);
-
-                // Calculate the SHA-256 hash
-                calculatedHash = sha256.ComputeHash(passwordAsBytes);
-
-                // Convert the hash to a hexadecimal string
-                string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
-                Console.WriteLine(hashedInput);
-                //MessageBox.Show("Hashed output should be out");
-                return hashedInput;
-            }
-        }
-
-        /// <summary>
-        /// This section is used to actually complete the user sign in. It establishes a database connection
-        /// and selects all the data available for the user. This will be their UID, username, hashed password and b64 of the image.
-        /// 
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="comparisonImage"></param>
-        private void UserSignIn(string username, string password, string comparisonImage)
-        {
-            //MessageBox.Show("We are inside the UserSignIn Function");
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                //MessageBox.Show("Connection Opened");
-                string sqlQuery = "SELECT * FROM Users WHERE Username = @Username";
-                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
-                {
-                    // Add parameters to the command
-                    command.Parameters.AddWithValue("@Username", username);
-                    //MessageBox.Show("Parameters set.");
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        //MessageBox.Show("DataReader executed");
-                        // Check if there are rows returned from the query
-                        if (reader.HasRows)
-                        {
-                           // MessageBox.Show("Has Rows!");
-                            // Iterate through the result set using the SqlDataReader
-                            while (reader.Read())
-                            {
-                               // MessageBox.Show("Now assigning values");
-                               //The reader object stores the database values as their headers
-
-                                //This section can be probably changed to be a stored procedure to be more secure.
-                                string databaseUsername = reader["Username"].ToString();
-                                string databasePassword = reader["Password"].ToString();
-                                string databaseImage = reader["image"].ToString();
-                                if(databasePassword == password)
-                                {
-                                    //MessageBox.Show("Passwords matched");
-                                    List<float> similarity = new List<float>(FacialComparison(databaseImage, comparisonImage));
-                                    foreach (float value in similarity)
-                                    {
-                                        if (value > 95)
-                                        {
-                                            //Add code for keystroke analysis here
-                                        }
-                                        else
-                                        {
-                                            //For if no user looks similar
-                                        }
-                                    }
-                                    if (similarity.Count > 0)
-                                    {
-                                        //Add code for when there is no face match
-                                    }
-                                }
-                                else
-                                {
-                                    //Code for when password is incorrect
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("No records found for the given ID.");
-                        }
-                    }
-                }
-                connection.Close();
-            }
-        }
-
-/// <summary>
-/// Facial Comparison Function.
-/// Takes the two images, one stored in database for user and the one that is being uploaded and compares them
-/// Both images are converted into MemoryStreams from Base64 and sent to AWS Facial Rekognition.
-/// This sends back a similiarty % which can be then used for furhter processing.
-/// </summary>
-/// <param name="databaseImage"></param>
-/// <param name="comparisonImage"></param>
-        //This function is called when using AWS API.
-        static List<float> FacialComparison(string databaseImage, string comparisonImage)
-        {
-            //MessageBox.Show("Now inside the facial comparison function");
-            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
-
-            var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
-
-            var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
-            var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
-            //MessageBox.Show("Image memory streams created");
-            var compareFacesRequest = new CompareFacesRequest
-            {
-                SourceImage = new Amazon.Rekognition.Model.Image
-                {
-                    Bytes = new MemoryStream(dbImage.ToArray())
-                },
-                TargetImage = new Amazon.Rekognition.Model.Image
-                {
-                    Bytes = new MemoryStream(uploadImage.ToArray())
-                },
-                SimilarityThreshold = 0,
-            };
-            // Call Amazon Rekognition API to compare faces
-
-            //MessageBox.Show("Calling the API");
-            CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
-            List<float> faceMatchSimilarities = new List<float>();
-            // Process the response
-            if (compareFacesResponse.FaceMatches.Count > 0)
-            {
-                
-                foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
-                {
-
-                    faceMatchSimilarities.Add(faceMatch.Similarity);
-                    MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
-                    return faceMatchSimilarities;
-                    //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please use a photo with your face in it.");
-                return null;
-            }
-            return null;
         }
     }
  }

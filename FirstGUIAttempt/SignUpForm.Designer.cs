@@ -110,7 +110,7 @@
             this.signUpSubmitButton.TabIndex = 7;
             this.signUpSubmitButton.Text = "Submit";
             this.signUpSubmitButton.UseVisualStyleBackColor = true;
-            this.signUpSubmitButton.Click += new System.EventHandler(this.submitButton);
+            this.signUpSubmitButton.Click += new System.EventHandler(this.submit);
             // 
             // takePhotoButton
             // 

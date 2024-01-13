@@ -85,7 +85,7 @@
             this.signInButton.TabIndex = 4;
             this.signInButton.Text = "Sign In";
             this.signInButton.UseVisualStyleBackColor = true;
-            this.signInButton.Click += new System.EventHandler(this.signIn);
+            this.signInButton.Click += new System.EventHandler(this.submit);
             // 
             // photoUploadButton
             // 
@@ -94,7 +94,6 @@
             this.photoUploadButton.Size = new System.Drawing.Size(127, 105);
             this.photoUploadButton.TabIndex = 5;
             this.photoUploadButton.TabStop = false;
-            this.photoUploadButton.Click += new System.EventHandler(this.photoUpload);
             // 
             // takePhotoButton
             // 
@@ -121,7 +120,6 @@
             this.Controls.Add(this.usernameInputTextBox);
             this.Name = "SignInPage";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.SignInPage_Load);
             ((System.ComponentModel.ISupportInitialize)(this.photoUploadButton)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
