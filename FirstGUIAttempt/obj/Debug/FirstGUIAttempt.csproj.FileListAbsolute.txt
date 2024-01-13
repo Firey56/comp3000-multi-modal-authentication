@@ -95,3 +95,19 @@ C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csprojAssemblyReference.cache
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\CsvHelper.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Microsoft.Bcl.HashCode.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Buffers.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Memory.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Numerics.Vectors.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Threading.Tasks.Extensions.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\CsvHelper.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Microsoft.Bcl.HashCode.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Buffers.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Memory.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Numerics.Vectors.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\System.Threading.Tasks.Extensions.xml

@@ -16,6 +16,8 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
+using System.Collections;
+using System.Security.Cryptography;
 
 namespace FirstGUIAttempt
 {
@@ -27,6 +29,7 @@ namespace FirstGUIAttempt
             InitializeComponent();
             InitializeWebcam();
             passwordInputTextBox.KeyDown += password_KeyPress;
+            passwordInputTextBox.TextChanged += passwordInput_TextChanged;
             //passwordInputTextBox.KeyUp += password_KeyUp;
         }
         private VideoCaptureDevice videoSource;
@@ -34,6 +37,7 @@ namespace FirstGUIAttempt
         string comparisonImageBase64 = null;
         static List<long> keystrokePattern = new List<long>();
         static Stopwatch keyboardTimer = new Stopwatch();
+        bool pasteFlag = false;
 
 
         private void userNameInput(object sender, EventArgs e)
@@ -54,6 +58,19 @@ namespace FirstGUIAttempt
         private void passwordInput(object sender, EventArgs e)
         {
 
+        }
+
+        private void passwordInput_TextChanged(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsText())
+            {
+                
+                if(Clipboard.GetText() == passwordInputTextBox.Text)
+                {
+                    pasteFlag = true;
+                    Console.WriteLine("Pasted info and clipboard are the same");
+                }
+            }
         }
 
         private void SignInPage_Load(object sender, EventArgs e)
@@ -248,18 +265,13 @@ namespace FirstGUIAttempt
                     comparisonImageBase64 = Convert.ToBase64String(byteArray);
                 }
 
-                // Dispose the captured image to avoid memory leaks
+                // Dispose the captured image
                 capturedImage.Dispose();
             }
             else
             {
                 MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
             }
-        }
-        private bool IsValidFile(string filePath) //Method which is called when the user uploads a photo to check that it is of valid format.
-        {
-            string extension = Path.GetExtension(filePath)?.ToLower();
-            return extension == ".png" || extension == ".jpeg" || extension == ".jpg";
         }
         /// <summary>
         /// This function triggers whenever a key is detected in down state in the textPassword box.
@@ -298,6 +310,8 @@ namespace FirstGUIAttempt
         {
             string usernameInput = usernameInputTextBox.Text;
             string passwordInput = passwordInputTextBox.Text;
+            string passwordHash = HashPassword(passwordInput);
+            
             //Makes the list of the timings of the keystroke
             List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
             finalKeystrokePattern.Add("Keystroke");//Initial keystroke
@@ -327,6 +341,15 @@ namespace FirstGUIAttempt
             {
                 MessageBox.Show("Please fill in all fields!");
             }
+        }
+
+        private string HashPassword(string input){
+            byte[] temporaryInput;
+            byte[] temporaryHash;
+
+            temporaryInput = ASCIIEncoding.ASCII.GetBytes(input);
+            temporaryHash = new MD5CryptoServiceProvider().ComputeHash(temporaryInput);
+            return temporaryHash.ToString();
         }
         /// <summary>
         /// This section is used to actually complete the user sign in. It establishes a database connection
@@ -362,16 +385,35 @@ namespace FirstGUIAttempt
                             {
                                // MessageBox.Show("Now assigning values");
                                //The reader object stores the database values as their headers
+
+                                //This section can be probably changed to be a stored procedure to be more secure.
                                 string databaseUsername = reader["Username"].ToString();
                                 string databasePassword = reader["Password"].ToString();
                                 string databaseImage = reader["image"].ToString();
                                 if(databasePassword == password)
                                 {
                                     //MessageBox.Show("Passwords matched");
-                                    FacialComparison(databaseImage, comparisonImage);
+                                    List<float> similarity = new List<float>(FacialComparison(databaseImage, comparisonImage));
+                                    foreach (float value in similarity)
+                                    {
+                                        if (value > 95)
+                                        {
+                                            //Add code for keystroke analysis here
+                                        }
+                                        else
+                                        {
+                                            //For if no user looks similar
+                                        }
+                                    }
+                                    if (similarity.Count > 0)
+                                    {
+                                        //Add code for when there is no face match
+                                    }
                                 }
-                                // Process the retrieved data (e.g., display or use it)
-                                //Console.WriteLine($"Column1: {column1Value}, Column2: {column2Value}, Column3: {column3Value}");
+                                else
+                                {
+                                    //Code for when password is incorrect
+                                }
                             }
                         }
                         else
@@ -393,7 +435,7 @@ namespace FirstGUIAttempt
 /// <param name="databaseImage"></param>
 /// <param name="comparisonImage"></param>
         //This function is called when using AWS API.
-        static void FacialComparison(string databaseImage, string comparisonImage)
+        static List<float> FacialComparison(string databaseImage, string comparisonImage)
         {
             //MessageBox.Show("Now inside the facial comparison function");
             var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
@@ -419,21 +461,26 @@ namespace FirstGUIAttempt
 
             //MessageBox.Show("Calling the API");
             CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
-
+            List<float> faceMatchSimilarities = new List<float>();
             // Process the response
-            if(compareFacesResponse.FaceMatches.Count > 0)
+            if (compareFacesResponse.FaceMatches.Count > 0)
             {
+                
                 foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
                 {
+
+                    faceMatchSimilarities.Add(faceMatch.Similarity);
                     MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
+                    return faceMatchSimilarities;
                     //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
                 }
             }
             else
             {
                 MessageBox.Show("Please use a photo with your face in it.");
+                return null;
             }
-         
+            return null;
         }
     }
  }

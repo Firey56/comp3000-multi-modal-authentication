@@ -12,10 +12,9 @@ using System.Data.SqlClient;
 using static FirstGUIAttempt.Common;
 using CsvHelper;
 using CsvHelper.Configuration;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Diagnostics;
+using AForge.Video.DirectShow;
+using AForge.Video;
 
 namespace FirstGUIAttempt
 {
@@ -27,11 +26,95 @@ namespace FirstGUIAttempt
         static List<long> keystrokePattern = new List<long>();
         static Stopwatch keyboardTimer = new Stopwatch();
         static List<string> finalKeystrokePattern = new List<string>();
+        private VideoCaptureDevice videoSource;
         public SignUpForm()
         {
+            Application.EnableVisualStyles();
             InitializeComponent();
+            InitializeWebcam();
             signUpFormPasswordTextBox.KeyDown += password_KeyPress;
+            
         }
+        private void InitializeWebcam()
+        {
+            signUpPictureBox.Visible = true;
+            // Get the list of available video devices (webcams)
+            FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+
+            if (videoDevices.Count > 0)
+            {
+                // Select the first video device
+                videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
+                videoSource.NewFrame += VideoSource_NewFrame;
+
+                // Start the video source
+                videoSource.Start();
+            }
+            else
+            {
+                MessageBox.Show("No video devices found.");
+            }
+        }
+        private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
+            Size newSize = CalculateSizeToFit(originalFrame.Size, signUpPictureBox.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
+            Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
+            signUpPictureBox.Image = resizedFrame;
+
+            // Dispose of old frame
+            originalFrame.Dispose();
+        }
+
+        private Size CalculateSizeToFit(Size originalSize, Size containerSize)
+        {
+            int width, height;
+
+            // Calculate the width and height to fit the original aspect ratio within the container
+            if (originalSize.Width > originalSize.Height)
+            {
+                width = containerSize.Width;
+                height = (int)(containerSize.Width * (float)originalSize.Height / originalSize.Width);
+            }
+            else
+            {
+                height = containerSize.Height;
+                width = (int)(containerSize.Height * (float)originalSize.Width / originalSize.Height);
+            }
+
+            return new Size(width, height);
+        }
+
+        private Bitmap ResizeImage(Bitmap originalImage, Size newSize)
+        {
+            // Create a new Bitmap with the specified size
+            Bitmap resizedImage = new Bitmap(newSize.Width, newSize.Height);
+
+            using (Graphics g = Graphics.FromImage(resizedImage))
+            {
+                // Maintain the aspect ratio of the original image and apply high-quality interpolation
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(originalImage, 0, 0, newSize.Width, newSize.Height);
+            }
+
+            return resizedImage;
+        }
+        /// <summary>
+        /// Function for stopping the video source when the form is closed.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Stop the video source when closing the form
+            if (videoSource != null && videoSource.IsRunning)
+            {
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
+            }
+
+            base.OnFormClosing(e);
+        }
+
 
         private static void password_KeyPress(object sender, KeyEventArgs e)
         {
@@ -54,65 +137,13 @@ namespace FirstGUIAttempt
 
         }
 
-        private void usernameLabel(object sender, EventArgs e)
-        {
-
-        }
 
         private void signUpPasswordTextBox(object sender, EventArgs e)
         {
         }
 
-        private void signUpPasswordLabel(object sender, EventArgs e)
-        {
-
-        }
 
         private void signUpFormPictureBox(object sender, EventArgs e)
-        {
-
-        }
-
-        private void browseButton(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "Image Files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All Files (*.*)|*.*";
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.RestoreDirectory = true;
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    selectedFilePath = openFileDialog.FileName;
-                    if (IsValidFile(selectedFilePath))
-                    {
-                        //Display the selected image
-                        signUpPictureBox.Image = Image.FromFile(selectedFilePath);
-                        Image theImage = signUpPictureBox.Image;
-                        if (theImage != null)
-                        {
-                            byte[] theImageData = Common.ImageToByteArray(theImage);
-                            base64Image = Convert.ToBase64String(theImageData);
-                        }
-                        signUpPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                        signUpBrowseButtonLabel.Text = selectedFilePath;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid file format. Please select a .png or .jpeg file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-
-            }
-        }
-
-        private bool IsValidFile(string filePath) //Method which is called when the user uploads a photo to check that it is of valid format.
-        {
-            string extension = Path.GetExtension(filePath)?.ToLower();
-            return extension == ".png" || extension == ".jpeg" || extension == ".jpg";
-        }
-
-        private void browseButtonLabel(object sender, EventArgs e)
         {
 
         }
@@ -204,18 +235,33 @@ namespace FirstGUIAttempt
             }
         }
 
-        /*        private string InsertPhotoIntoLocation(string username, byte[] imageData)
+        private void takePhoto(object sender, EventArgs e)
+        {
+            if (signUpPictureBox.Image != null)
+            {
+                // Capture the current image from the PictureBox
+                Bitmap capturedImage = (Bitmap)signUpPictureBox.Image.Clone();
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
+
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    string storagePath = @"C:\DissertationWork";
-                    string savedFilePath = Path.Combine(storagePath, $"{username}.png");
-                    MessageBox.Show(savedFilePath);
+                    // Save the Bitmap to the MemoryStream
+                    capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
 
-                    File.WriteAllBytes(savedFilePath, imageData);
-                    return savedFilePath;
+                    // Convert the MemoryStream to a byte array
+                    byte[] byteArray = memoryStream.ToArray();
+
+                    // Convert the byte array to a Base64 string
+                    base64Image = Convert.ToBase64String(byteArray);
                 }
-
-
+                // Dispose the captured image
+                capturedImage.Dispose();
             }
-        */
+            else
+            {
+                MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
+            }
+        }
     }
 }
