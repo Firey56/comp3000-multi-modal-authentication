@@ -30,7 +30,6 @@ namespace FirstGUIAttempt
             //passwordInputTextBox.KeyUp += password_KeyUp;
         }
         private VideoCaptureDevice videoSource;
-        string selectedFilePath = null;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         string comparisonImageBase64 = null;
         static List<long> keystrokePattern = new List<long>();
