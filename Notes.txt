@@ -1,0 +1,25 @@
+Things to maybe do:
+
+
+Facial Recognition:
+	Use AWS face liveness to mitigate risks of a photo being used
+		This can also be used if a user pastes in the password rather than typing it as bypasses the machine learning.
+	
+
+
+Logging in:
+	Use stored procedure to check the username and password is the correct and returns a flag variable.
+		Mitigate risk of variables being leaked.
+	
+	Ensure data sanitisation to prevent SQL injection.
+
+
+Photo Taking:
+	Have timer that triggers when state changes in username and password text boxes.
+	Trigger every 0.5s to take a photo, send off for face comparison. //Half complete
+		Have this trigger based on time rather than time elapsed when they enter a character.
+
+Sign up:
+	User can either take a live photo or upload a photo (?)
+	Require user to type their password in X amount of times so there is some sample data for the machine learning?
+

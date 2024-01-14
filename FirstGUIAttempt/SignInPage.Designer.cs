@@ -105,7 +105,6 @@
             this.takePhotoButton.TabIndex = 8;
             this.takePhotoButton.Text = "Take Photo";
             this.takePhotoButton.UseVisualStyleBackColor = true;
-            this.takePhotoButton.Click += new System.EventHandler(this.takePhotoButton_Click);
             // 
             // SignInPage
             // 

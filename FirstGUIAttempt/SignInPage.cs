@@ -18,6 +18,7 @@ using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using System.Collections;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace FirstGUIAttempt
 {
@@ -34,10 +35,12 @@ namespace FirstGUIAttempt
         }
         private VideoCaptureDevice videoSource;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
-        string comparisonImageBase64 = null;
+        List<string> comparisonImageBase64 = new List<string>();
         static List<long> keystrokePattern = new List<long>();
         static Stopwatch keyboardTimer = new Stopwatch();
         bool pasteFlag = false;
+        int photoCount = 0;
+        static Stopwatch photoStopwatch = new Stopwatch();
 
 
         private void userNameInput(object sender, EventArgs e)
@@ -93,49 +96,6 @@ namespace FirstGUIAttempt
         {
 
         }
-        /// <summary>
-        /// This is for the browse button that will be later removed when the seamless image selection is implemented.
-        /// When an image is selected, it displays it on the screen.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
-        //private void photoUploadButtonClick(object sender, EventArgs e)
-        //{
-            //InitializeWebcam();
-            /*using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Filter = "Image Files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All Files (*.*)|*.*";
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.RestoreDirectory = true;
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    selectedFilePath = openFileDialog.FileName;
-                    if (IsValidFile(selectedFilePath))
-                    {
-                        // Display the selected image
-                        photoUploadButton.Image = System.Drawing.Image.FromFile(selectedFilePath);
-                        photoUploadButton.SizeMode = PictureBoxSizeMode.Zoom;
-                        photoUploadLabelText.Text = selectedFilePath;
-                        System.Drawing.Image theImage = photoUploadButton.Image;
-                        if (theImage != null)
-                        {
-                            byte[] theImageData = Common.ImageToByteArray(theImage);
-                            comparisonImageBase64 = Convert.ToBase64String(theImageData);
-                            //Console.WriteLine(comparisonImageBase64);
-                            //MessageBox.Show("WriteLine should be here");
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid file format. Please select a .png or .jpeg file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-
-            }
-            */
-        //}
         /// <summary>
         /// This function allows for the webcam to be accessible using a Video Source using AForge libraries.
         /// </summary>
@@ -237,49 +197,69 @@ namespace FirstGUIAttempt
 
             base.OnFormClosing(e);
         }
-        /// <summary>
-        /// Function for when the user clicks "Take Photo".
-        /// This creates a bitmap of the user image and then converts this into a base64 string for face comparison.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void takePhotoButton_Click(object sender, EventArgs e)
+
+        private void TakePhoto()
         {
-            // Check if there is an image in the PictureBox
-            if (photoUploadButton.Image != null)
+            //Console.WriteLine("Inside Take Photo");
+            if (photoCount <= 5)
             {
-                // Capture the current image from the PictureBox
-                Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
-                videoSource.SignalToStop();
-                videoSource.WaitForStop();
-
-                using (MemoryStream memoryStream = new MemoryStream())
+                //Console.WriteLine("inside photo count");
+                if (photoUploadButton.Image != null)
                 {
-                    // Save the Bitmap to the MemoryStream
-                    capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                    if (!photoStopwatch.IsRunning)
+                    {
+                        photoStopwatch.Start();
+                        Console.WriteLine("stopwatch is started");
+                    }
+                    //Console.WriteLine("Image is being displayedc");
+                    //long temp = keyboardTimer.ElapsedMilliseconds;
+                    //Console.WriteLine("stopwtach has been created");
 
-                    // Convert the MemoryStream to a byte array
-                    byte[] byteArray = memoryStream.ToArray();
+                    //Console.WriteLine(tempStopwatch.Elapsed.ToString());
+                    //Console.WriteLine("Stopwatch is running");
+                    //Console.WriteLine(tempStopwatch.ElapsedMilliseconds.ToString());
 
-                    // Convert the byte array to a Base64 string
-                    comparisonImageBase64 = Convert.ToBase64String(byteArray);
+                    photoStopwatch.Restart();
+                    // Capture the current image from the PictureBox
+                    Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
+                    //videoSource.SignalToStop();
+                    //videoSource.WaitForStop();
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        // Save the Bitmap to the MemoryStream
+                        capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+                        // Convert the MemoryStream to a byte array
+                        byte[] byteArray = memoryStream.ToArray();
+
+                        // Convert the byte array to a Base64 string
+                        comparisonImageBase64.Add(Convert.ToBase64String(byteArray));
+                        Console.WriteLine("Photo taken " + photoCount);
+                        //Console.WriteLine();
+                        photoCount++;
+                        // Dispose the captured image
+                        capturedImage.Dispose();
+
+                    }
                 }
 
-                // Dispose the captured image
-                capturedImage.Dispose();
-            }
-            else
-            {
-                MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
+                else
+                {
+                    MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
+                }
+
             }
         }
+           
         /// <summary>
         /// This function triggers whenever a key is detected in down state in the textPassword box.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void password_KeyPress(object sender, KeyEventArgs e)
+        private void password_KeyPress(object sender, KeyEventArgs e)
         {
+
             //Console.WriteLine("Down");
             if (!keyboardTimer.IsRunning)
             {
@@ -290,10 +270,17 @@ namespace FirstGUIAttempt
                 long currentTime = keyboardTimer.ElapsedMilliseconds;
                 keystrokePattern.Add(currentTime);
             }
+            if (keystrokePattern.Count == 1 || tempStopwatch.ElapsedMilliseconds >= 500)
+            {
+                TakePhoto();
+            }
+
 
             // Display or process the keystroke pattern as needed
             Console.WriteLine($"Recorded: Keystroke");
         }
+
+   
 
 
         /*private static void password_KeyUp(object sender, KeyEventArgs e)
@@ -309,8 +296,7 @@ namespace FirstGUIAttempt
         private void submitButton() 
         {
             string usernameInput = usernameInputTextBox.Text;
-            string passwordInput = passwordInputTextBox.Text;
-            string passwordHash = HashPassword(passwordInput);
+            string passwordHash = HashPassword(passwordInputTextBox.Text);
             
             //Makes the list of the timings of the keystroke
             List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
@@ -332,10 +318,10 @@ namespace FirstGUIAttempt
             }
             //MessageBox.Show(usernameInput);
             //MessageBox.Show(passwordInput);
-            if (usernameInput != null && passwordInput != null && comparisonImageBase64 != null)
+            if (usernameInput != null && passwordHash != null && comparisonImageBase64 != null)
             {
                 //MessageBox.Show("We are inside the SubmitButton function");
-                UserSignIn(usernameInput, passwordInput, comparisonImageBase64);
+                UserSignIn(usernameInput, passwordHash, comparisonImageBase64);
             }
             else
             {
@@ -359,7 +345,7 @@ namespace FirstGUIAttempt
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <param name="comparisonImage"></param>
-        private void UserSignIn(string username, string password, string comparisonImage)
+        private void UserSignIn(string username, string password, List<string> comparisonImage)
         {
             //MessageBox.Show("We are inside the UserSignIn Function");
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -393,21 +379,28 @@ namespace FirstGUIAttempt
                                 if(databasePassword == password)
                                 {
                                     //MessageBox.Show("Passwords matched");
-                                    List<float> similarity = new List<float>(FacialComparison(databaseImage, comparisonImage));
-                                    foreach (float value in similarity)
+                                    float highestSimilarity = FacialComparison(databaseImage, comparisonImage); //This is for current setup
+                                    List<float> allSimilarities = new List<float>(); //This is for when multiple photos
+
+                                    foreach (float value in allSimilarities)
                                     {
                                         if (value > 95)
                                         {
                                             //Add code for keystroke analysis here
+                                            allSimilarities.Add(value);
                                         }
                                         else
                                         {
                                             //For if no user looks similar
                                         }
                                     }
-                                    if (similarity.Count > 0)
+                                    if (allSimilarities.Count > 0)
                                     {
                                         //Add code for when there is no face match
+                                    }
+                                    else
+                                    {
+                                        //Add code for when there are no face matches.
                                     }
                                 }
                                 else
@@ -435,52 +428,59 @@ namespace FirstGUIAttempt
 /// <param name="databaseImage"></param>
 /// <param name="comparisonImage"></param>
         //This function is called when using AWS API.
-        static List<float> FacialComparison(string databaseImage, string comparisonImage)
+        static float FacialComparison(string databaseImage, List<string> comparisonImages)
         {
             //MessageBox.Show("Now inside the facial comparison function");
             var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
 
             var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
 
-            var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
-            var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
-            //MessageBox.Show("Image memory streams created");
-            var compareFacesRequest = new CompareFacesRequest
+            foreach(string value in comparisonImages)
             {
-                SourceImage = new Amazon.Rekognition.Model.Image
+                var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
+                var uploadImage = new MemoryStream(Convert.FromBase64String(value));//Create Image Stream for Uploaded Image
+                                                                                              //MessageBox.Show("Image memory streams created");
+                var compareFacesRequest = new CompareFacesRequest
                 {
-                    Bytes = new MemoryStream(dbImage.ToArray())
-                },
-                TargetImage = new Amazon.Rekognition.Model.Image
-                {
-                    Bytes = new MemoryStream(uploadImage.ToArray())
-                },
-                SimilarityThreshold = 0,
-            };
-            // Call Amazon Rekognition API to compare faces
+                    SourceImage = new Amazon.Rekognition.Model.Image
+                    {
+                        Bytes = new MemoryStream(dbImage.ToArray())
+                    },
+                    TargetImage = new Amazon.Rekognition.Model.Image
+                    {
+                        Bytes = new MemoryStream(uploadImage.ToArray())
+                    },
+                    SimilarityThreshold = 0,
+                };
+                // Call Amazon Rekognition API to compare faces
 
-            //MessageBox.Show("Calling the API");
-            CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
-            List<float> faceMatchSimilarities = new List<float>();
-            // Process the response
-            if (compareFacesResponse.FaceMatches.Count > 0)
-            {
-                
-                foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
+                //MessageBox.Show("Calling the API");
+                CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
+                // Process the response
+                if (compareFacesResponse.FaceMatches.Count > 0)
                 {
+                    float highestSimilarity = 0;
 
-                    faceMatchSimilarities.Add(faceMatch.Similarity);
-                    MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
-                    return faceMatchSimilarities;
-                    //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+                    foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
+                    {
+                        if (faceMatch.Similarity > highestSimilarity)
+                        {
+                            highestSimilarity = faceMatch.Similarity;
+                        }
+                        return highestSimilarity;
+                        //faceMatchSimilarities.Add(faceMatch.Similarity);
+                        //MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
+                        //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please use a photo with your face in it.");
+                    return 0;
                 }
             }
-            else
-            {
-                MessageBox.Show("Please use a photo with your face in it.");
-                return null;
-            }
-            return null;
+            
+            return 0;
         }
     }
  }
