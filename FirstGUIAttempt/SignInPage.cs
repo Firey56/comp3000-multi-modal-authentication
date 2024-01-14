@@ -499,7 +499,7 @@ namespace FirstGUIAttempt
                 long currentTime = keyboardTimer.ElapsedMilliseconds;
                 keystrokePattern.Add(currentTime);
             }
-            if (keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 500)
+            if (keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 200)
             {
                 TakePhoto();
             }
@@ -528,8 +528,10 @@ namespace FirstGUIAttempt
             string passwordHash = HashPassword(passwordInputTextBox.Text);
             
             //Makes the list of the timings of the keystroke
-            List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
-            finalKeystrokePattern.Add("Keystroke");//Initial keystroke
+            List<string> finalKeystrokePattern = new List<string>
+            {
+                "Keystroke"//Initial keystroke
+            };//Our new list with keystrokes + timings
             long x = 0;//Set value as 0 seconds before first keystroke
             foreach (long value in keystrokePattern)
             { 
