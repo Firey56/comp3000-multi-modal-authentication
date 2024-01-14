@@ -135,15 +135,11 @@ namespace FirstGUIAttempt
                 x = y;//This will be our new subtraction time between keystrokes.
 
             }
-            foreach(string value in finalKeystrokePattern)
-            {
-                Console.WriteLine(value);
-            }
             //MessageBox.Show(usernameInput);
             //MessageBox.Show(passwordInput);
             if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
             {
-                //MessageBox.Show("We are inside the SubmitButton function");
+                MessageBox.Show("We are inside the SubmitButton function");
                 UserSignIn(usernameInput, hashedPassword, comparisonImageBase64);
             }
             else
@@ -162,87 +158,6 @@ namespace FirstGUIAttempt
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <param name="comparisonImage"></param>
-        private void UserSignIn(string username, string password, string comparisonImage)
-        {
-            //MessageBox.Show("We are inside the UserSignIn Function");
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                //MessageBox.Show("Connection Opened");
-                string sqlQuery = "SELECT * FROM Users WHERE Username = @Username";
-                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
-                {
-                    // Add parameters to the command
-                    command.Parameters.AddWithValue("@Username", username);
-                    //MessageBox.Show("Parameters set.");
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        //MessageBox.Show("DataReader executed");
-                        // Check if there are rows returned from the query
-                        if (reader.HasRows)
-                        {
-                           // MessageBox.Show("Has Rows!");
-                            // Iterate through the result set using the SqlDataReader
-                            while (reader.Read())
-                            {
-                               // MessageBox.Show("Now assigning values");
-                               //The reader object stores the database values as their headers
-
-                                //This section can be probably changed to be a stored procedure to be more secure.
-                                string databaseUsername = reader["Username"].ToString();
-                                string databasePassword = reader["Password"].ToString();
-                                string databaseImage = reader["image"].ToString();
-                                if(databasePassword == password)
-                                {
-                                    //MessageBox.Show("Passwords matched");
-                                    List<float> similarity = new List<float>(FacialComparison(databaseImage, comparisonImage));
-                                    float totalSimilarity = 0;
-                                    if(similarity.Count > 0)
-                                    {
-                                        foreach (float value in similarity)
-                                        {
-                                            totalSimilarity += value;
-                                        }
-                                        //Code for when there definitely was a face match
-                                        if ((totalSimilarity / similarity.Count) > 95)
-                                        { 
-                                            //Complete keystroke analysis and live person analysis (i can't remember what it's called)
-                                        }
-                                        else
-                                        {
-                                            //For if average isn't high enough.
-                                            MessageBox.Show("Please take a new photo.");
-                                            loginAttempt++;
-                                            if(loginAttempt >= 5)
-                                            {
-                                                //Create procedure to lock account?
-                                            }
-                                        }
-    
-                                    }
-                                    else
-                                    {
-                                        //Code for when there was no face matches.
-                                    }
-                                    
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Password is Incorrect");
-                                    //Code for when password is incorrect
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("No records found for the given ID.");
-                        }
-                    }
-                }
-                connection.Close();
-            }
-        }
 
 /// <summary>
 /// Facial Comparison Function.
@@ -253,53 +168,6 @@ namespace FirstGUIAttempt
 /// <param name="databaseImage"></param>
 /// <param name="comparisonImage"></param>
         //This function is called when using AWS API.
-        static List<float> FacialComparison(string databaseImage, string comparisonImage)
-        {
-            //MessageBox.Show("Now inside the facial comparison function");
-            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
-
-            var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
-
-            var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
-            var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
-            //MessageBox.Show("Image memory streams created");
-            var compareFacesRequest = new CompareFacesRequest
-            {
-                SourceImage = new Amazon.Rekognition.Model.Image
-                {
-                    Bytes = new MemoryStream(dbImage.ToArray())
-                },
-                TargetImage = new Amazon.Rekognition.Model.Image
-                {
-                    Bytes = new MemoryStream(uploadImage.ToArray())
-                },
-                SimilarityThreshold = 0,
-            };
-            // Call Amazon Rekognition API to compare faces
-
-            //MessageBox.Show("Calling the API");
-            CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
-            List<float> faceMatchSimilarities = new List<float>();
-            // Process the response
-            if (compareFacesResponse.FaceMatches.Count > 0)
-            {
-                
-                foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
-                {
-
-                    faceMatchSimilarities.Add(faceMatch.Similarity);
-                    MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
-                    return faceMatchSimilarities;
-                    //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please use a photo with your face in it.");
-                return null;
-            }
-            return null;
-        }
 
         /// <summary>
         /// This function hashes the password using SHA256 hashing and then gets it converted to a string for storage and comparison.
@@ -322,7 +190,7 @@ namespace FirstGUIAttempt
 
                 // Convert the hash to a hexadecimal string
                 string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
-                Console.WriteLine(hashedInput);
+                //Console.WriteLine(hashedInput);
                 //MessageBox.Show("Hashed output should be out");
                 return hashedInput;
             }
@@ -438,7 +306,7 @@ namespace FirstGUIAttempt
                     if (!photoStopwatch.IsRunning)
                     {
                         photoStopwatch.Start();
-                        Console.WriteLine("stopwatch is started");
+                        //Console.WriteLine("stopwatch is started");
                     }
                     //Console.WriteLine("Image is being displayedc");
                     //long temp = keyboardTimer.ElapsedMilliseconds;
@@ -464,7 +332,7 @@ namespace FirstGUIAttempt
 
                         // Convert the byte array to a Base64 string
                         comparisonImageBase64.Add(Convert.ToBase64String(byteArray));
-                        Console.WriteLine("Photo taken " + photoCount);
+                        //Console.WriteLine("Photo taken " + photoCount);
                         //Console.WriteLine();
                         photoCount++;
                         // Dispose the captured image
@@ -506,7 +374,7 @@ namespace FirstGUIAttempt
 
 
             // Display or process the keystroke pattern as needed
-            Console.WriteLine($"Recorded: Keystroke");
+            //Console.WriteLine($"Recorded: Keystroke");
         }
 
    
@@ -519,46 +387,7 @@ namespace FirstGUIAttempt
         */
 
 
-        /// <summary>
-        /// This section assigns our variables from the user input text and checks if they've been input
-        /// </summary>
-        private void submitButton() 
-        {
-            string usernameInput = usernameInputTextBox.Text;
-            string passwordHash = HashPassword(passwordInputTextBox.Text);
-            
-            //Makes the list of the timings of the keystroke
-            List<string> finalKeystrokePattern = new List<string>
-            {
-                "Keystroke"//Initial keystroke
-            };//Our new list with keystrokes + timings
-            long x = 0;//Set value as 0 seconds before first keystroke
-            foreach (long value in keystrokePattern)
-            { 
-                long y = value;//Sets equal to the "currentTime" variable previously added
-                //Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
-                
-                finalKeystrokePattern.Add((y-x).ToString());//Adds in the time difference between 
-                finalKeystrokePattern.Add("Keystroke");
-                x = y;//This will be our new subtraction time between keystrokes.
-
-            }
-            foreach(string value in finalKeystrokePattern)
-            {
-                Console.WriteLine(value);
-            }
-            //MessageBox.Show(usernameInput);
-            //MessageBox.Show(passwordInput);
-            if (usernameInput != null && passwordHash != null && comparisonImageBase64 != null)
-            {
-                //MessageBox.Show("We are inside the SubmitButton function");
-                UserSignIn(usernameInput, passwordHash, comparisonImageBase64);
-            }
-            else
-            {
-                MessageBox.Show("Please fill in all fields!");
-            }
-        }
+        
         /// <summary>
         /// This section is used to actually complete the user sign in. It establishes a database connection
         /// and selects all the data available for the user. This will be their UID, username, hashed password and b64 of the image.
@@ -573,57 +402,62 @@ namespace FirstGUIAttempt
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                //MessageBox.Show("Connection Opened");
+                MessageBox.Show("Connection Opened");
                 string sqlQuery = "SELECT * FROM Users WHERE Username = @Username";
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
-                    // Add parameters to the command
+                    //Add parameters to the command
                     command.Parameters.AddWithValue("@Username", username);
-                    //MessageBox.Show("Parameters set.");
+                    MessageBox.Show("Parameters set.");
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        //MessageBox.Show("DataReader executed");
+                        MessageBox.Show("DataReader executed");
                         // Check if there are rows returned from the query
                         if (reader.HasRows)
                         {
-                           // MessageBox.Show("Has Rows!");
+                            MessageBox.Show("Has Rows!");
                             // Iterate through the result set using the SqlDataReader
                             while (reader.Read())
                             {
-                               // MessageBox.Show("Now assigning values");
-                               //The reader object stores the database values as their headers
+                                MessageBox.Show("Now assigning values");
+                                //The reader object stores the database values as their headers
 
                                 //This section can be probably changed to be a stored procedure to be more secure.
                                 string databaseUsername = reader["Username"].ToString();
                                 string databasePassword = reader["Password"].ToString();
                                 string databaseImage = reader["image"].ToString();
-                                if(databasePassword == password)
+                                if (databasePassword == password)
                                 {
-                                    //MessageBox.Show("Passwords matched");
-                                    float highestSimilarity = FacialComparison(databaseImage, comparisonImage); //This is for current setup
+                                    MessageBox.Show("Passwords matched");
                                     List<float> allSimilarities = new List<float>(); //This is for when multiple photos
-
-                                    foreach (float value in allSimilarities)
+                                    if (comparisonImageBase64.Count > 0)
                                     {
-                                        if (value > 95)
+                                        foreach (string value in comparisonImageBase64)
                                         {
-                                            //Add code for keystroke analysis here
-                                            allSimilarities.Add(value);
+                                            allSimilarities.Add(FacialComparison(databaseImage, value));
+                                        }
+                                        float totalSimilarity = 0;
+                                        foreach (float value in allSimilarities)
+                                        {
+                                            totalSimilarity += value;
+                                        }
+                                        float allSimilaritiesAvg = totalSimilarity / allSimilarities.Count;
+                                        if (allSimilaritiesAvg >= 95)
+                                        {
+                                            MessageBox.Show("You've successfully logged in!");
+                                            //Code for keystroke analysis
                                         }
                                         else
                                         {
-                                            //For if no user looks similar
+                                            //Code for when not confident it is user
                                         }
-                                    }
-                                    if (allSimilarities.Count > 0)
-                                    {
-                                        //Add code for when there is no face match
                                     }
                                     else
                                     {
-                                        //Add code for when there are no face matches.
+                                        //Code for when there are no face matches.
                                     }
+                                    //MessageBox.Show(highestSimilarity.ToString());
                                 }
                                 else
                                 {
@@ -650,17 +484,15 @@ namespace FirstGUIAttempt
 /// <param name="databaseImage"></param>
 /// <param name="comparisonImage"></param>
         //This function is called when using AWS API.
-        static float FacialComparison(string databaseImage, List<string> comparisonImages)
+        static float FacialComparison(string databaseImage, string comparisonImage)
         {
             //MessageBox.Show("Now inside the facial comparison function");
             var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
 
             var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
 
-            foreach(string value in comparisonImages)
-            {
                 var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
-                var uploadImage = new MemoryStream(Convert.FromBase64String(value));//Create Image Stream for Uploaded Image
+                var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
                                                                                               //MessageBox.Show("Image memory streams created");
                 var compareFacesRequest = new CompareFacesRequest
                 {
@@ -678,18 +510,20 @@ namespace FirstGUIAttempt
 
                 //MessageBox.Show("Calling the API");
                 CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
+                List<float> allFaceMatchSimilarities = new List<float>();
+                float highestValue = 0;
                 // Process the response
                 if (compareFacesResponse.FaceMatches.Count > 0)
                 {
-                    float highestSimilarity = 0;
-
+                    
                     foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
                     {
-                        if (faceMatch.Similarity > highestSimilarity)
+                        if(highestValue <= faceMatch.Similarity)
                         {
-                            highestSimilarity = faceMatch.Similarity;
+                            highestValue = faceMatch.Similarity;
                         }
-                        return highestSimilarity;
+                        Console.WriteLine("Inside of FaceComparison Function: " + faceMatch.Similarity);
+                        return highestValue;
                         //faceMatchSimilarities.Add(faceMatch.Similarity);
                         //MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
                         //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
@@ -698,11 +532,11 @@ namespace FirstGUIAttempt
                 else
                 {
                     MessageBox.Show("Please use a photo with your face in it.");
-                    return 0;
+                    return highestValue;
                 }
+            return 0;
             }
             
-            return 0;
         }
     }
- }
+ 
