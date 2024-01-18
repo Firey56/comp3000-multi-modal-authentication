@@ -82,7 +82,7 @@ namespace FirstGUIAttempt
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void takePhotoButton_Click(object sender, EventArgs e)
+        /*private void takePhotoButton_Click(object sender, EventArgs e)
         {
             // Check if there is an image in the PictureBox
             if (photoUploadButton.Image != null)
@@ -111,7 +111,7 @@ namespace FirstGUIAttempt
             {
                 MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
             }
-        }
+        }*/
         /// <summary>
         /// This section assigns our variables from the user input text and checks if they've been input
         /// </summary>
@@ -140,7 +140,7 @@ namespace FirstGUIAttempt
             if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
             {
                 MessageBox.Show("We are inside the SubmitButton function");
-                UserSignIn(usernameInput, hashedPassword, comparisonImageBase64);
+                UserSignIn(usernameInput, hashedPassword);
             }
             else
             {
@@ -396,7 +396,7 @@ namespace FirstGUIAttempt
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <param name="comparisonImage"></param>
-        private void UserSignIn(string username, string password, List<string> comparisonImage)
+        private void UserSignIn(string username, string password)
         {
             //MessageBox.Show("We are inside the UserSignIn Function");
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -451,23 +451,26 @@ namespace FirstGUIAttempt
                                         else
                                         {
                                             //Code for when not confident it is user
+                                            MessageBox.Show("User isn't the origina user");
                                         }
                                     }
                                     else
                                     {
                                         //Code for when there are no face matches.
+                                        MessageBox.Show("No face found in provided images.");
                                     }
                                     //MessageBox.Show(highestSimilarity.ToString());
                                 }
                                 else
                                 {
+                                    MessageBox.Show("Password is incorrect");
                                     //Code for when password is incorrect
                                 }
                             }
                         }
                         else
                         {
-                            Console.WriteLine("No records found for the given ID.");
+                            MessageBox.Show("No records found for the given ID.");
                         }
                     }
                 }

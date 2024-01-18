@@ -23,3 +23,9 @@ Sign up:
 	User can either take a live photo or upload a photo (?)
 	Require user to type their password in X amount of times so there is some sample data for the machine learning?
 
+
+
+Give multiple confidence scores - return confidence score based off the different combinations.
+		Different access control.
+
+Use of feature vectors instead of storing b64 image.
