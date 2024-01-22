@@ -20,7 +20,8 @@ namespace FirstGUIAttempt
     public partial class SignUpForm : Form
     {
         string base64Image = null;
-        readonly string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         readonly static List<long> keystrokePattern = new List<long>();
         readonly static Stopwatch keyboardTimer = new Stopwatch();
         readonly static List<string> finalKeystrokePattern = new List<string>();
@@ -58,7 +59,7 @@ namespace FirstGUIAttempt
             }
             if (usernameInput != null && hashedPassword != null && base64Image != null)
             {
-                CreateCSV(usernameInput);
+                //CreateCSV(usernameInput);
                 InsertIntoUsers(usernameInput, hashedPassword, base64Image);
             }
             else
@@ -77,12 +78,16 @@ namespace FirstGUIAttempt
                     connection.Open();
 
                     // Insert data into the database
-                    using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
+                    //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
+                    using(SqlCommand command = new SqlCommand("UserSignUp", connection))
                     {
+                        command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
                         //string newFilePath = InsertPhotoIntoLocation(username, theImageData);
                         command.Parameters.AddWithValue("@image", base64Image);
+                        string csv = string.Join(",", finalKeystrokePattern);
+                        command.Parameters.AddWithValue("@Keystrokes", csv);
                         //MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();
@@ -156,8 +161,11 @@ namespace FirstGUIAttempt
 
  
 
-        
-
+        /*
+        /// <summary>
+        /// Creates a CSV file for when user creates an account.
+        /// </summary>
+        /// <param name="username"></param>
         private void CreateCSV(string username)
         {
             string csvFilePath = @"C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\CSV\" + username + ".csv";
@@ -169,7 +177,8 @@ namespace FirstGUIAttempt
             }
             
         }
-        
+        */
+
 
         private void takePhoto(object sender, EventArgs e)
         {

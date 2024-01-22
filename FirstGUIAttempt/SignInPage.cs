@@ -35,12 +35,14 @@ namespace FirstGUIAttempt
         }
         private VideoCaptureDevice videoSource;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         List<string> comparisonImageBase64 = new List<string>();
         static List<long> keystrokePattern = new List<long>();
         static Stopwatch keyboardTimer = new Stopwatch();
         bool pasteFlag = false;
         int photoCount = 0;
         static Stopwatch photoStopwatch = new Stopwatch();
+        List<string> finalKeystrokePattern = new List<string>();
         int loginAttempt = 0;
 
 
@@ -122,7 +124,7 @@ namespace FirstGUIAttempt
 
             
             //Makes the list of the timings of the keystroke
-            List<string> finalKeystrokePattern = new List<string>();//Our new list with keystrokes + timings
+            //Our new list with keystrokes + timings
             finalKeystrokePattern.Add("Keystroke");//Initial keystroke
             long x = 0;//Set value as 0 seconds before first keystroke
             foreach (long value in keystrokePattern)
@@ -402,6 +404,7 @@ namespace FirstGUIAttempt
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
+                int UserID;
                 MessageBox.Show("Connection Opened");
                 string sqlQuery = "SELECT * FROM Users WHERE Username = @Username";
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
@@ -427,6 +430,7 @@ namespace FirstGUIAttempt
                                 string databaseUsername = reader["Username"].ToString();
                                 string databasePassword = reader["Password"].ToString();
                                 string databaseImage = reader["image"].ToString();
+                                UserID = Int32.Parse(reader["UserID"].ToString());
                                 if (databasePassword == password)
                                 {
                                     MessageBox.Show("Passwords matched");
@@ -445,6 +449,7 @@ namespace FirstGUIAttempt
                                         float allSimilaritiesAvg = totalSimilarity / allSimilarities.Count;
                                         if (allSimilaritiesAvg >= 95)
                                         {
+                                            InsertKeystrokes(UserID);
                                             MessageBox.Show("You've successfully logged in!");
                                             //Code for keystroke analysis
                                         }
@@ -474,7 +479,7 @@ namespace FirstGUIAttempt
                         }
                     }
                 }
-                connection.Close();
+                
             }
         }
 
@@ -539,6 +544,43 @@ namespace FirstGUIAttempt
                 }
             return 0;
             }
+        private void InsertKeystrokes(int UserID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Insert data into the database
+                    //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
+                    using (SqlCommand command = new SqlCommand("UserSignIn", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@UserID", UserID);;
+                        string csv = string.Join(",", finalKeystrokePattern);
+                        command.Parameters.AddWithValue("@Keystrokes", csv);
+                        //MessageBox.Show(@"{username}, {password}, {filePath}");
+                        // Execute the query
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Data inserted successfully into the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to insert data into the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
             
         }
     }
