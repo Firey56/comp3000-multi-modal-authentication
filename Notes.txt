@@ -12,6 +12,8 @@ Logging in:
 		Mitigate risk of variables being leaked.
 	
 	Ensure data sanitisation to prevent SQL injection.
+	
+	Always log user login attempts as "expected" and "not expected"?
 
 
 Photo Taking:

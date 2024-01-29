@@ -33,6 +33,13 @@ namespace FirstGUIAttempt
             passwordInputTextBox.TextChanged += passwordInput_TextChanged;
             //passwordInputTextBox.KeyUp += password_KeyUp;
         }
+        public class Patterns
+        {
+            public int UserID { get; set; }
+            public string Keystroke { get; set; }
+            public int Expected { get; set; }
+        }
+
         private VideoCaptureDevice videoSource;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
@@ -434,6 +441,11 @@ namespace FirstGUIAttempt
                                 if (databasePassword == password)
                                 {
                                     MessageBox.Show("Passwords matched");
+                                    //We want all forms of authentication to occur, so we can call all three functions here and then decide later.
+                                    //FaceMatch Function
+                                    //Keystroke Function
+                                    //Face Liveness Function
+                                    long confidenceScore = KeystrokeAnalysis(UserID);
                                     List<float> allSimilarities = new List<float>(); //This is for when multiple photos
                                     if (comparisonImageBase64.Count > 0)
                                     {
@@ -446,10 +458,10 @@ namespace FirstGUIAttempt
                                         {
                                             totalSimilarity += value;
                                         }
-                                        float allSimilaritiesAvg = totalSimilarity / allSimilarities.Count;
-                                        if (allSimilaritiesAvg >= 95)
+                                        float facialSimilaritiesAverage = totalSimilarity / allSimilarities.Count;
+                                        if (facialSimilaritiesAverage >= 95)
                                         {
-                                            InsertKeystrokes(UserID);
+                                            InsertKeystrokes(UserID, 1);
                                             MessageBox.Show("You've successfully logged in!");
                                             //Code for keystroke analysis
                                         }
@@ -480,6 +492,47 @@ namespace FirstGUIAttempt
                     }
                 }
                 
+            }
+        }
+    
+        private long KeystrokeAnalysis(int UserID)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                List<Patterns> Patterns= new List<Patterns>();
+                MessageBox.Show("Connection Opened");
+                string sqlQuery = "SELECT Keystrokes, Expected FROM Keystrokes WHERE UserID = @UserID";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    //Add parameters to the command
+                    command.Parameters.AddWithValue("@UserID", UserID);
+                    MessageBox.Show("Parameters set.");
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        MessageBox.Show("DataReader executed");
+                        // Check if there are rows returned from the query
+                        if (reader.HasRows)
+                        {
+                            MessageBox.Show("Has Rows!");
+                            // Iterate through the result set using the SqlDataReader
+                            while (reader.Read())
+                            {
+                                MessageBox.Show("Now assigning values");
+                                //The reader object stores the database values as their headers
+                                Patterns currentSelection = new Patterns
+                                {
+                                    UserID = Convert.ToInt32(reader["UserID"]),
+                                    Keystroke = reader["Keystrokes"].ToString(),
+                                    Expected = Convert.ToInt32(reader["Expected"]),
+                                };
+                            }
+                            //Call the actual Python Machine Learning Function
+                        }
+                    }
+                }
+            return 0;
             }
         }
 
@@ -518,7 +571,7 @@ namespace FirstGUIAttempt
 
                 //MessageBox.Show("Calling the API");
                 CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
-                List<float> allFaceMatchSimilarities = new List<float>();
+                //List<float> allFaceMatchSimilarities = new List<float>();
                 float highestValue = 0;
                 // Process the response
                 if (compareFacesResponse.FaceMatches.Count > 0)
@@ -544,7 +597,14 @@ namespace FirstGUIAttempt
                 }
             return 0;
             }
-        private void InsertKeystrokes(int UserID)
+
+        /// <summary>
+        /// This function inserts values into the Keystroke Pattern table. This will always be executed on user login attempt.
+        /// It takes 3 arguments, UserID (int), Keystrokes (string list) and Expected (bool).
+        /// </summary>
+        /// <param name="UserID"></param>
+        /// <param name="Expected"></param>
+        private void InsertKeystrokes(int UserID, int Expected)
         {
             try
             {
@@ -560,6 +620,7 @@ namespace FirstGUIAttempt
                         command.Parameters.AddWithValue("@UserID", UserID);;
                         string csv = string.Join(",", finalKeystrokePattern);
                         command.Parameters.AddWithValue("@Keystrokes", csv);
+                        command.Parameters.AddWithValue("@Expected", Expected);
                         //MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();
