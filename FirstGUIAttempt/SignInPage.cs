@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace FirstGUIAttempt
 {
@@ -40,6 +41,14 @@ namespace FirstGUIAttempt
             public int Expected { get; set; }
         }
 
+        /// <summary>
+        /// This project will be annotated with the BetterComments Extension
+        /// Code will be annotated as following:
+        // TODO: This is future work that needs doing
+        // ! This is for notes throughout the project.
+        // ? This is for questioning whether what is done is correct, and if it should be redone
+        // * This will indicate crossed out code.
+        /// </summary>
         private VideoCaptureDevice videoSource;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
@@ -85,6 +94,7 @@ namespace FirstGUIAttempt
                 }
             }
         }
+      
         /// <summary>
         /// Function for when the user clicks "Take Photo".
         /// This creates a bitmap of the user image and then converts this into a base64 string for face comparison.
@@ -121,6 +131,7 @@ namespace FirstGUIAttempt
                 MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
             }
         }*/
+
         /// <summary>
         /// This section assigns our variables from the user input text and checks if they've been input
         /// </summary>
@@ -137,7 +148,7 @@ namespace FirstGUIAttempt
             foreach (long value in keystrokePattern)
             { 
                 long y = value;//Sets equal to the "currentTime" variable previously added
-                //Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
+                //! Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
                 
                 finalKeystrokePattern.Add((y-x).ToString());//Adds in the time difference between 
                 finalKeystrokePattern.Add("Keystroke");
@@ -200,7 +211,7 @@ namespace FirstGUIAttempt
                 // Convert the hash to a hexadecimal string
                 string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
                 //Console.WriteLine(hashedInput);
-                //MessageBox.Show("Hashed output should be out");
+                //*MessageBox.Show("Hashed output should be out");
                 return hashedInput;
             }
         }
@@ -306,30 +317,30 @@ namespace FirstGUIAttempt
         }
         private void TakePhoto()
         {
-            //Console.WriteLine("Inside Take Photo");
+            //*Console.WriteLine("Inside Take Photo");
             if (photoCount <= 5)
             {
-                //Console.WriteLine("inside photo count");
+                //*Console.WriteLine("inside photo count");
                 if (photoUploadButton.Image != null)
                 {
                     if (!photoStopwatch.IsRunning)
                     {
                         photoStopwatch.Start();
-                        //Console.WriteLine("stopwatch is started");
+                        //*Console.WriteLine("stopwatch is started");
                     }
-                    //Console.WriteLine("Image is being displayedc");
-                    //long temp = keyboardTimer.ElapsedMilliseconds;
-                    //Console.WriteLine("stopwtach has been created");
+                    //*Console.WriteLine("Image is being displayedc");
+                    //*long temp = keyboardTimer.ElapsedMilliseconds;
+                    //*Console.WriteLine("stopwtach has been created");
 
-                    //Console.WriteLine(tempStopwatch.Elapsed.ToString());
-                    //Console.WriteLine("Stopwatch is running");
-                    //Console.WriteLine(tempStopwatch.ElapsedMilliseconds.ToString());
+                    //*Console.WriteLine(tempStopwatch.Elapsed.ToString());
+                    //*Console.WriteLine("Stopwatch is running");
+                    //*Console.WriteLine(tempStopwatch.ElapsedMilliseconds.ToString());
 
                     photoStopwatch.Restart();
                     // Capture the current image from the PictureBox
                     Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
-                    //videoSource.SignalToStop();
-                    //videoSource.WaitForStop();
+                    //*videoSource.SignalToStop();
+                    //*videoSource.WaitForStop();
 
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
@@ -341,8 +352,8 @@ namespace FirstGUIAttempt
 
                         // Convert the byte array to a Base64 string
                         comparisonImageBase64.Add(Convert.ToBase64String(byteArray));
-                        //Console.WriteLine("Photo taken " + photoCount);
-                        //Console.WriteLine();
+                        //*Console.WriteLine("Photo taken " + photoCount);
+                        //*Console.WriteLine();
                         photoCount++;
                         // Dispose the captured image
                         capturedImage.Dispose();
@@ -383,7 +394,7 @@ namespace FirstGUIAttempt
 
 
             // Display or process the keystroke pattern as needed
-            //Console.WriteLine($"Recorded: Keystroke");
+            //*Console.WriteLine($"Recorded: Keystroke");
         }
 
    
@@ -441,10 +452,10 @@ namespace FirstGUIAttempt
                                 if (databasePassword == password)
                                 {
                                     MessageBox.Show("Passwords matched");
-                                    //We want all forms of authentication to occur, so we can call all three functions here and then decide later.
-                                    //FaceMatch Function
-                                    //Keystroke Function
-                                    //Face Liveness Function
+                                    //!We want all forms of authentication to occur, so we can call all three functions here and then decide later.
+                                    //TODO FaceMatch Function
+                                    //TODO Keystroke Function
+                                    //TODO Face Liveness Function
                                     long confidenceScore = KeystrokeAnalysis(UserID);
                                     List<float> allSimilarities = new List<float>(); //This is for when multiple photos
                                     if (comparisonImageBase64.Count > 0)
@@ -463,12 +474,12 @@ namespace FirstGUIAttempt
                                         {
                                             InsertKeystrokes(UserID, 1);
                                             MessageBox.Show("You've successfully logged in!");
-                                            //Code for keystroke analysis
+                                            //*Code for keystroke analysis
                                         }
                                         else
                                         {
                                             //Code for when not confident it is user
-                                            MessageBox.Show("User isn't the origina user");
+                                            MessageBox.Show("User isn't the original user");
                                         }
                                     }
                                     else
@@ -516,7 +527,7 @@ namespace FirstGUIAttempt
                         if (reader.HasRows)
                         {
                             MessageBox.Show("Has Rows!");
-                            // Iterate through the result set using the SqlDataReader
+
                             while (reader.Read())
                             {
                                 MessageBox.Show("Now assigning values");
@@ -528,7 +539,30 @@ namespace FirstGUIAttempt
                                     Expected = Convert.ToInt32(reader["Expected"]),
                                 };
                             }
-                            //Call the actual Python Machine Learning Function
+
+                            //TODO All the actual Python Machine Learning Function
+                            //! Passing over the value to the Python file.
+                            string jsonSerialization = JsonConvert.SerializeObject(Patterns);//Serialize the list into a JSON format
+                            ProcessStartInfo machineLearningStart = new ProcessStartInfo//Create our new process and provide parameters
+                            {
+                            FileName = "python",
+                            Arguments = $"Machine_Learning_Model.py {Patterns}",
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                        };
+
+                            using (Process process = Process.Start(machineLearningStart))//Start the program
+                            {
+                                using (StreamReader PythonReader = process.StandardOutput)
+                                {
+                                    string result = PythonReader.ReadToEnd();
+                                    long confidenceValue = long.Parse(result);//Parse back the value that will be returned.
+                                    Console.Write(confidenceValue);
+                                }
+                            }
+
+
+
                         }
                     }
                 }
@@ -554,7 +588,8 @@ namespace FirstGUIAttempt
 
                 var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
                 var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
-                                                                                              //MessageBox.Show("Image memory streams created");
+
+                //*MessageBox.Show("Image memory streams created");
                 var compareFacesRequest = new CompareFacesRequest
                 {
                     SourceImage = new Amazon.Rekognition.Model.Image
@@ -621,7 +656,7 @@ namespace FirstGUIAttempt
                         string csv = string.Join(",", finalKeystrokePattern);
                         command.Parameters.AddWithValue("@Keystrokes", csv);
                         command.Parameters.AddWithValue("@Expected", Expected);
-                        //MessageBox.Show(@"{username}, {password}, {filePath}");
+                        //*MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();
 
