@@ -59,7 +59,7 @@ namespace FirstGUIAttempt
         int photoCount = 0;
         static Stopwatch photoStopwatch = new Stopwatch();
         List<string> finalKeystrokePattern = new List<string>();
-        int loginAttempt = 0;
+        //int loginAttempt = 0;
 
 
         private void userNameInput(object sender, EventArgs e)
@@ -139,18 +139,17 @@ namespace FirstGUIAttempt
         {
             string usernameInput = usernameInputTextBox.Text;
             string hashedPassword = HashPassword(passwordInputTextBox.Text);
-
-            
             //Makes the list of the timings of the keystroke
             //Our new list with keystrokes + timings
             finalKeystrokePattern.Add("Keystroke");//Initial keystroke
             long x = 0;//Set value as 0 seconds before first keystroke
             foreach (long value in keystrokePattern)
-            { 
+            {
                 long y = value;//Sets equal to the "currentTime" variable previously added
                 //! Keystroke down -> time -> keystroke down -> time -> keystroke down -> time -> keystroke down
-                
+
                 finalKeystrokePattern.Add((y-x).ToString());//Adds in the time difference between 
+                //finalKeystrokePattern.Add(value.ToString());
                 finalKeystrokePattern.Add("Keystroke");
                 x = y;//This will be our new subtraction time between keystrokes.
 
@@ -159,7 +158,7 @@ namespace FirstGUIAttempt
             //MessageBox.Show(passwordInput);
             if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
             {
-                MessageBox.Show("We are inside the SubmitButton function");
+               // MessageBox.Show("We are inside the SubmitButton function");
                 UserSignIn(usernameInput, hashedPassword);
             }
             else
@@ -384,8 +383,18 @@ namespace FirstGUIAttempt
             }
             else
             {
-                long currentTime = keyboardTimer.ElapsedMilliseconds;
-                keystrokePattern.Add(currentTime);
+                if(e.KeyCode == Keys.Back)
+                {
+                    keystrokePattern.RemoveAt(keystrokePattern.Count - 1);
+                    //keystrokePattern.Add(keyboardTimer.ElapsedMilliseconds);
+                }
+                else
+                {
+                    long currentTime = keyboardTimer.ElapsedMilliseconds;
+                    keystrokePattern.Add(currentTime);
+                }
+
+                //keyboardTimer.Reset();
             }
             if (keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 200)
             {
@@ -423,25 +432,25 @@ namespace FirstGUIAttempt
             {
                 connection.Open();
                 int UserID;
-                MessageBox.Show("Connection Opened");
+                //MessageBox.Show("Connection Opened");
                 string sqlQuery = "SELECT * FROM Users WHERE Username = @Username";
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     //Add parameters to the command
                     command.Parameters.AddWithValue("@Username", username);
-                    MessageBox.Show("Parameters set.");
+                    //MessageBox.Show("Parameters set.");
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        MessageBox.Show("DataReader executed");
+                        //MessageBox.Show("DataReader executed");
                         // Check if there are rows returned from the query
                         if (reader.HasRows)
                         {
-                            MessageBox.Show("Has Rows!");
+                            //MessageBox.Show("Has Rows!");
                             // Iterate through the result set using the SqlDataReader
                             while (reader.Read())
                             {
-                                MessageBox.Show("Now assigning values");
+                                //MessageBox.Show("Now assigning values");
                                 //The reader object stores the database values as their headers
 
                                 //This section can be probably changed to be a stored procedure to be more secure.
@@ -451,12 +460,18 @@ namespace FirstGUIAttempt
                                 UserID = Int32.Parse(reader["UserID"].ToString());
                                 if (databasePassword == password)
                                 {
-                                    MessageBox.Show("Passwords matched");
+                                    //MessageBox.Show("Passwords matched");
+                                    InsertKeystrokes(UserID, 1);
+                                    /*
                                     //!We want all forms of authentication to occur, so we can call all three functions here and then decide later.
                                     //TODO FaceMatch Function
                                     //TODO Keystroke Function
                                     //TODO Face Liveness Function
-                                    long confidenceScore = KeystrokeAnalysis(UserID);
+                                    //long confidenceScore = KeystrokeAnalysis(UserID);
+                                    if (pasteFlag == true)
+                                    {
+                                        //TODO This needs to make sure the confidence score is lowered as user pasted in password
+                                    }
                                     List<float> allSimilarities = new List<float>(); //This is for when multiple photos
                                     if (comparisonImageBase64.Count > 0)
                                     {
@@ -486,7 +501,7 @@ namespace FirstGUIAttempt
                                     {
                                         //Code for when there are no face matches.
                                         MessageBox.Show("No face found in provided images.");
-                                    }
+                                    }*/
                                     //MessageBox.Show(highestSimilarity.ToString());
                                 }
                                 else
@@ -560,9 +575,6 @@ namespace FirstGUIAttempt
                                     Console.Write(confidenceValue);
                                 }
                             }
-
-
-
                         }
                     }
                 }
@@ -655,7 +667,7 @@ namespace FirstGUIAttempt
                         command.Parameters.AddWithValue("@UserID", UserID);;
                         string csv = string.Join(",", finalKeystrokePattern);
                         command.Parameters.AddWithValue("@Keystrokes", csv);
-                        command.Parameters.AddWithValue("@Expected", Expected);
+                        command.Parameters.AddWithValue("@Expected", 0);
                         //*MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();
