@@ -158,8 +158,12 @@ namespace FirstGUIAttempt
             //MessageBox.Show(passwordInput);
             if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
             {
-               // MessageBox.Show("We are inside the SubmitButton function");
-                UserSignIn(usernameInput, hashedPassword);
+                // MessageBox.Show("We are inside the SubmitButton function");
+                foreach(string value in finalKeystrokePattern)
+                {
+                    Console.WriteLine($"{value}");
+                }
+                //UserSignIn(usernameInput, hashedPassword);
             }
             else
             {

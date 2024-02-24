@@ -114,3 +114,5 @@ C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.SuggestedBindingRedirects.cache
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Newtonsoft.Json.dll
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Newtonsoft.Json.xml
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Newtonsoft.Json.dll
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\Newtonsoft.Json.xml
