@@ -388,7 +388,7 @@ namespace FirstGUIAttempt
             else
             {
                 if(e.KeyCode == Keys.Back)
-                {
+                {//TODO make sure this is changed so that it doesn't crash if they press backspace when empty
                     keystrokePattern.RemoveAt(keystrokePattern.Count - 1);
                     //keystrokePattern.Add(keyboardTimer.ElapsedMilliseconds);
                 }
