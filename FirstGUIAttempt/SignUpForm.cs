@@ -81,6 +81,7 @@ namespace FirstGUIAttempt
                     //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
                     using(SqlCommand command = new SqlCommand("UserSignUp", connection))
                     {
+                        Console.WriteLine("We are inside the command.");
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
@@ -88,6 +89,10 @@ namespace FirstGUIAttempt
                         command.Parameters.AddWithValue("@image", base64Image);
                         string csv = string.Join(",", finalKeystrokePattern);
                         command.Parameters.AddWithValue("@Keystrokes", csv);
+                        MessageBox.Show(username);
+                        MessageBox.Show(password);
+                        MessageBox.Show(csv);
+
                         //MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
                         int rowsAffected = command.ExecuteNonQuery();
@@ -102,6 +107,7 @@ namespace FirstGUIAttempt
                         }
 
                     }
+                    //TODO If unable to get database trigger to work, create stored procedure that creates the table using existing username variable
                 }
             }
             catch (Exception ex)
