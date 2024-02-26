@@ -28,7 +28,6 @@ concatenated_strings = []
 columnNames = ["PatternNumber", "UserID", "Keystroke", "Expected"]
 fileLocation = "../../../KeystrokeExcel.xlsx"
 data = pandas.read_excel(fileLocation, names = columnNames)
-print(os.getcwd())
 dataFrame = pandas.DataFrame(data)
 
 array_2d = [row.split() for row in dataFrame['Keystroke']]
