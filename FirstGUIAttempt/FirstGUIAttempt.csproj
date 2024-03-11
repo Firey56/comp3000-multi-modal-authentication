@@ -96,6 +96,12 @@
     <Compile Include="FirstGUIAttempt.Designer.cs">
       <DependentUpon>FirstGUIAttempt.cs</DependentUpon>
     </Compile>
+    <Compile Include="IntermediatePage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntermediatePage.Designer.cs">
+      <DependentUpon>IntermediatePage.cs</DependentUpon>
+    </Compile>
     <Compile Include="SignInPage.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +118,9 @@
     </Compile>
     <EmbeddedResource Include="FirstGUIAttempt.resx">
       <DependentUpon>FirstGUIAttempt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IntermediatePage.resx">
+      <DependentUpon>IntermediatePage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

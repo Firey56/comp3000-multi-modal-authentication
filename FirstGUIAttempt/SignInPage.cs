@@ -20,6 +20,7 @@ using System.Collections;
 using System.Security.Cryptography;
 using System.Threading;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace FirstGUIAttempt
 {
@@ -59,6 +60,9 @@ namespace FirstGUIAttempt
         int photoCount = 0;
         static Stopwatch photoStopwatch = new Stopwatch();
         List<string> finalKeystrokePattern = new List<string>();
+        IntermediatePage goToIntermediate = new IntermediatePage();
+        
+
         //int loginAttempt = 0;
 
 
@@ -89,7 +93,7 @@ namespace FirstGUIAttempt
 
                 if (Clipboard.GetText() == passwordInputTextBox.Text)
                 {
-                    pasteFlag = true;
+                    //pasteFlag = true;
                     Console.WriteLine("Pasted info and clipboard are the same");
                 }
             }
@@ -168,14 +172,108 @@ namespace FirstGUIAttempt
                     Console.WriteLine($"{value}");
                 }
                 //CallPython();
-                UserSignIn(usernameInput, hashedPassword);
+                if(InputSanitisation(usernameInput) == true)
+                {
+                    goToIntermediate = new IntermediatePage();
+                    goToIntermediate.Show();
+                    this.Hide();
+                    UserSignIn(usernameInput, hashedPassword);
+                }
+                else
+                {
+                    MessageBox.Show("Input has not passed data sanitisation. There is an attempt at an exploit.");
+                }
             }
             else
             {
                 MessageBox.Show("Please fill in all fields!");
             }
         }
-        public int CallPython()
+
+        public bool InputSanitisation(string checkUsername)
+        {
+            ///////////////////////////////////////////////////////////////////////////////
+            ///Series of patterns to check for input validation
+            ///////////////////////////////////////////////////////////////////////////////
+            string sqlInjectionPattern = @"(\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( INTO)?|MERGE|SELECT|UPDATE|UNION( ALL)?)\b)|(--.*$)";
+            string xssPattern = @"<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>";
+            string pathTraversalPattern = @"(\.\./|\/\.\.|\\\/\\\.\.|\\.\.|file:\/\/)";
+            string htmlInjectionPattern = @"(<|>|&|%3C|%3E|%26)";
+            string commandInjectionPattern = @"(&|\||;|`|\\|\$\(|\)|\{|\})";
+            string ldapInjectionPattern = @"(\*|\(|\)|\x00)";
+
+            // Combine all patterns into a single regex pattern
+            string combinedPattern = string.Join("|", sqlInjectionPattern, xssPattern, pathTraversalPattern, htmlInjectionPattern, commandInjectionPattern, ldapInjectionPattern);
+
+            // Create a Regex object with the combined pattern
+            Regex regex = new Regex(combinedPattern, RegexOptions.IgnoreCase);
+
+            // Check if the user input matches any of the patterns
+            if (regex.IsMatch(checkUsername))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        async Task<float> RunMachineLearningProcessAsync()
+        {
+            // Your code to run the machine learning process asynchronously
+            // For example:
+            float estimate = 0;
+            await Task.Run(() =>
+            {
+                // Code to execute the machine learning process
+                // This could involve calling a Python script, invoking an external process, etc.
+                // Ensure to properly handle any exceptions or errors
+                string pythonInterpreter = "python";
+                string pythonScript = "../../../MachineLearningModel.py";
+                string csv = string.Join(",", finalKeystrokePattern);
+
+                // Prepare process start information
+                ProcessStartInfo start = new ProcessStartInfo();
+                start.FileName = pythonInterpreter;
+                start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", pythonScript, usernameInputTextBox.Text, csv);
+                start.UseShellExecute = false;
+                start.RedirectStandardOutput = true;
+                start.CreateNoWindow = true;
+
+                // Start the process
+                using (Process process = Process.Start(start))
+                {
+                    using (StreamReader reader = process.StandardOutput)
+                    {
+                        string result = reader.ReadToEnd();
+
+                        ///////////////////////////////////////////////////////////////////////////
+                        ///The result we get from this includes a file path and then the value we want.
+                        ///We need to parse out the file path.
+                        ///////////////////////////////////////////////////////////////////////////
+                        string[] outputLines = result.Split('\n');//Split on new line
+                        string numericalValue = outputLines[outputLines.Length - 2].Trim(); // Remove the previous values from the array
+
+                        // Parse the numerical value
+                        if (!string.IsNullOrEmpty(numericalValue))//Ensures we have a number
+                        {
+                            if (float.TryParse(numericalValue, out estimate))
+                            {
+                                Console.WriteLine("Estimate from Python script: " + estimate);
+                                // Use the estimate in further processing
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No numerical value received from Python script");
+                        }
+                    }
+                }
+            });
+            return estimate;
+        }
+        public float CallPython()
         {
             string pythonInterpreter = "python";
             string pythonScript = "../../../MachineLearningModel.py";
@@ -210,6 +308,7 @@ namespace FirstGUIAttempt
                         if (float.TryParse(numericalValue, out estimate))
                         {
                             Console.WriteLine("Estimate from Python script: " + estimate);
+                            return estimate;
                             // Use the estimate in further processing
                         }
                     }
@@ -479,7 +578,7 @@ namespace FirstGUIAttempt
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <param name="comparisonImage"></param>
-        private void UserSignIn(string username, string password)
+        private async void UserSignIn(string username, string password)
         {
             //MessageBox.Show("We are inside the UserSignIn Function");
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -514,24 +613,30 @@ namespace FirstGUIAttempt
                                 UserID = Int32.Parse(reader["UserID"].ToString());
                                 if (databasePassword == password)
                                 {
+                                    goToIntermediate.UpdateLabelsForLogin("PasswordMatchTickBox", "true");
                                     float keystrokeAnalysisConfidence = 1;
                                     float facialAnalysisSimilarityConfidence;
                                     //MessageBox.Show("Passwords matched");
-                                    
+
                                     //!We want all forms of authentication to occur, so we can call all three functions here and then decide later.
                                     //TODO FaceMatch Function
                                     //TODO Keystroke Function
                                     //TODO Face Liveness Function
                                     //long confidenceScore = KeystrokeAnalysis(UserID);
+
+
                                     if (pasteFlag == true)
                                     {
                                         //TODO This needs to make sure the confidence score is lowered as user pasted in password
-                                        keystrokeAnalysisConfidence = 0;
+                                        //keystrokeAnalysisConfidence = 0;
+                                        goToIntermediate.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
                                     }
                                     if(keystrokeAnalysisConfidence == 1)
                                     {
-                                        //keystrokeAnalysisConfidence = CallPython();
-                                        keystrokeAnalysisConfidence = 90;
+                                        Task<float> machineLearningTask = RunMachineLearningProcessAsync();
+                                        keystrokeAnalysisConfidence = await machineLearningTask;
+                                        goToIntermediate.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+                                        //keystrokeAnalysisConfidence = 90;
                                     }
                                     ////////////////////////////////////////////////////////////////////
                                     ///This will calculate the average similarity from the photos taken
@@ -549,10 +654,17 @@ namespace FirstGUIAttempt
                                             totalSimilarity += value;
                                         }
                                         facialAnalysisSimilarityConfidence = totalSimilarity / allSimilarities.Count;
+                                        goToIntermediate.UpdateLabelsForLogin("FacialAnalysisTickBox", facialAnalysisSimilarityConfidence.ToString());
                                         ////////////////////////////////////////////////////////////////////////
                                         ///End of the calculation
                                         ///////////////////////////////////////////////////////////////////////
-                                        float overallConfidence = (float)(facialAnalysisSimilarityConfidence * 0.5) + (float)(keystrokeAnalysisConfidence * 0.4);
+                                        float facialAnalysisValue = (float)(facialAnalysisSimilarityConfidence * 0.5);
+                                        float keystrokeAnalysisValue = (float)((keystrokeAnalysisConfidence*100) * 0.5);
+                                        float overallConfidence = facialAnalysisValue + keystrokeAnalysisValue;
+
+                                        Console.WriteLine("Facial Analysis Value: " + facialAnalysisValue);
+                                        Console.WriteLine("Keystroke Analysis Value: " + keystrokeAnalysisValue);
+                                        Console.WriteLine(overallConfidence);
                                         if (overallConfidence >= 60)
                                         {
                                             InsertKeystrokes(username, 1);

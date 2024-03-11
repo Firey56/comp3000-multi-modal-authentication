@@ -14,6 +14,7 @@ using System.Diagnostics;
 using AForge.Video.DirectShow;
 using AForge.Video;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace FirstGUIAttempt
 {
@@ -60,13 +61,48 @@ namespace FirstGUIAttempt
             if (usernameInput != null && hashedPassword != null && base64Image != null)
             {
                 //CreateCSV(usernameInput);
-                InsertIntoUsers(usernameInput, hashedPassword, base64Image);
-            }
+                if (InputSanitisation(usernameInput) == true)
+                {
+                    InsertIntoUsers(usernameInput, hashedPassword, base64Image);
+
+                }
+                else
+                {
+                    MessageBox.Show("Input has not passed data sanitisation. There is an attempt at an exploit.");
+                }            }
             else
             {
                 MessageBox.Show("Please fill in all fields!");
             }
 
+        }
+        public bool InputSanitisation(string checkUsername)
+        {
+            ///////////////////////////////////////////////////////////////////////////////
+            ///Series of patterns to check for input validation
+            ///////////////////////////////////////////////////////////////////////////////
+            string sqlInjectionPattern = @"(\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( INTO)?|MERGE|SELECT|UPDATE|UNION( ALL)?)\b)|(--.*$)";
+            string xssPattern = @"<script\b[^<]*(?:(?!</script>)<[^<]*)*</script>";
+            string pathTraversalPattern = @"(\.\./|\/\.\.|\\\/\\\.\.|\\.\.|file:\/\/)";
+            string htmlInjectionPattern = @"(<|>|&|%3C|%3E|%26)";
+            string commandInjectionPattern = @"(&|\||;|`|\\|\$\(|\)|\{|\})";
+            string ldapInjectionPattern = @"(\*|\(|\)|\x00)";
+
+            // Combine all patterns into a single regex pattern
+            string combinedPattern = string.Join("|", sqlInjectionPattern, xssPattern, pathTraversalPattern, htmlInjectionPattern, commandInjectionPattern, ldapInjectionPattern);
+
+            // Create a Regex object with the combined pattern
+            Regex regex = new Regex(combinedPattern, RegexOptions.IgnoreCase);
+
+            // Check if the user input matches any of the patterns
+            if (regex.IsMatch(checkUsername))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private void InsertIntoUsers(string username, string password, string base64Image)
