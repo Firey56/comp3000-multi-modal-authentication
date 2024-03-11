@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Drawing.Drawing2D;
 namespace FirstGUIAttempt
 {
     public partial class IntermediatePage : Form
@@ -16,19 +16,20 @@ namespace FirstGUIAttempt
         {
             InitializeComponent();
         }
+
         public void UpdateLabelsForLogin(string labelUpdated, string data)
         {
             // Update labels on Form3 based on the event data
             switch (labelUpdated)
             {
                 case "PasswordMatchTickBox":
-                    if(data == "true")
+                    if (data == "true")
                     {
                         PasswordMatchTickBox.Text = "✔";
                     }
                     break;
                 case "FacialAnalysisTickBox":
-                    if(float.Parse(data) >= 0.6)
+                    if (float.Parse(data) >= 0.6)
                     {
                         FacialAnalysisTickBox.Text = "✔";
                     }
@@ -36,10 +37,10 @@ namespace FirstGUIAttempt
                     {
                         FacialAnalysisTickBox.Text = "✘";
                     }
-                    
+
                     break;
                 case "KeystrokeAnalysisTickBox":
-                    if(float.Parse(data) >= 0.6)
+                    if (float.Parse(data) >= 0.6)
                     {
                         KeystrokeAnalysisTickBox.Text = "✔";
                     }
@@ -50,6 +51,6 @@ namespace FirstGUIAttempt
                     break;
             }
 
-            }
         }
     }
+}

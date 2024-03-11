@@ -31,3 +31,13 @@ Give multiple confidence scores - return confidence score based off the differen
 		Different access control.
 
 Use of feature vectors instead of storing b64 image.
+
+
+https://loading.io/
+
+Colour Scheme:
+#7A918D
+93b1a7
+99c2a2
+c5edac
+dbfeb8

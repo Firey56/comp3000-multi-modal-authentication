@@ -139,13 +139,14 @@ namespace FirstGUIAttempt
         /// <summary>
         /// This section assigns our variables from the user input text and checks if they've been input
         /// </summary>
-        private void submit(object sender, EventArgs e)
+        /// 
+        private void UserSubmit()
         {
             string usernameInput = usernameInputTextBox.Text;
             string hashedPassword = HashPassword(passwordInputTextBox.Text);
             //Makes the list of the timings of the keystroke
             //Our new list with keystrokes + timings
-            if(finalKeystrokePattern.Count == 0)
+            if (finalKeystrokePattern.Count == 0)
             {
                 finalKeystrokePattern.Add("Keystroke");//Initial keystroke
                 long x = 0;//Set value as 0 seconds before first keystroke
@@ -161,7 +162,7 @@ namespace FirstGUIAttempt
 
                 }
             }
-            
+
             //MessageBox.Show(usernameInput);
             //MessageBox.Show(passwordInput);
             if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
@@ -172,11 +173,12 @@ namespace FirstGUIAttempt
                     Console.WriteLine($"{value}");
                 }
                 //CallPython();
-                if(InputSanitisation(usernameInput) == true)
+                if (InputSanitisation(usernameInput) == true)
                 {
                     goToIntermediate = new IntermediatePage();
-                    goToIntermediate.Show();
                     this.Hide();
+                    goToIntermediate.Show();
+                    //this.Hide();
                     UserSignIn(usernameInput, hashedPassword);
                 }
                 else
@@ -188,6 +190,11 @@ namespace FirstGUIAttempt
             {
                 MessageBox.Show("Please fill in all fields!");
             }
+        }
+        private void submit(object sender, EventArgs e)
+        {
+            UserSubmit();
+            
         }
 
         public bool InputSanitisation(string checkUsername)
@@ -272,53 +279,6 @@ namespace FirstGUIAttempt
                 }
             });
             return estimate;
-        }
-        public float CallPython()
-        {
-            string pythonInterpreter = "python";
-            string pythonScript = "../../../MachineLearningModel.py";
-            string csv = string.Join(",", finalKeystrokePattern);
-
-            // Prepare process start information
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = pythonInterpreter;
-            start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", pythonScript, usernameInputTextBox.Text, csv);
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            start.CreateNoWindow = true;
-           
-            // Start the process
-            using (Process process = Process.Start(start))
-            {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    string result = reader.ReadToEnd();
-
-                    ///////////////////////////////////////////////////////////////////////////
-                    ///The result we get from this includes a file path and then the value we want.
-                    ///We need to parse out the file path.
-                    ///////////////////////////////////////////////////////////////////////////
-                    string[] outputLines = result.Split('\n');//Split on new line
-                    string numericalValue = outputLines[outputLines.Length - 2].Trim(); // Remove the previous values from the array
-
-                    // Parse the numerical value
-                    if (!string.IsNullOrEmpty(numericalValue))//Ensures we have a number
-                    {
-                        float estimate;
-                        if (float.TryParse(numericalValue, out estimate))
-                        {
-                            Console.WriteLine("Estimate from Python script: " + estimate);
-                            return estimate;
-                            // Use the estimate in further processing
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No numerical value received from Python script");
-                    }
-                }
-            }
-            return 0;
         }
 
 
@@ -536,9 +496,18 @@ namespace FirstGUIAttempt
             }
             else
             {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    UserSubmit();
+                }
                 if (e.KeyCode == Keys.Back)
                 {//TODO make sure this is changed so that it doesn't crash if they press backspace when empty
-                    keystrokePattern.RemoveAt(keystrokePattern.Count - 1);
+                    keystrokePattern.Clear();
+                    passwordInputTextBox.Text = "";
+                    keyboardTimer.Stop();
+                    keyboardTimer.Reset();
+                    keystrokePattern.Clear();
+                    
                     //keystrokePattern.Add(keyboardTimer.ElapsedMilliseconds);
                 }
                 else
@@ -546,6 +515,7 @@ namespace FirstGUIAttempt
                     long currentTime = keyboardTimer.ElapsedMilliseconds;
                     keystrokePattern.Add(currentTime);
                 }
+                
 
                 //keyboardTimer.Reset();
             }
@@ -578,6 +548,38 @@ namespace FirstGUIAttempt
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <param name="comparisonImage"></param>
+        /// 
+        private async Task<float> CalculateFacialScoreAverage(string databaseImage)
+        {
+            List<float> allSimilarities = new List<float>(); //This is for all the photos taken
+            if (comparisonImageBase64.Count > 0) //This should always be true
+            {
+                foreach (string value in comparisonImageBase64)
+                {
+                    Task<float> executeFacialComparison = FacialComparison(databaseImage, value);
+                    float currentSimilarity = await executeFacialComparison;
+                    Console.WriteLine("The current similarity is: " + currentSimilarity);
+                    //float currentSimilarity = await executeFacialComparison;
+                    allSimilarities.Add(currentSimilarity);
+
+                }
+                float totalSimilarity = 0; //This starts calculating the average
+                foreach (float value in allSimilarities)
+                {
+                    totalSimilarity += value;
+                }
+                return totalSimilarity / allSimilarities.Count;
+                ////////////////////////////////////////////////////////////////////////
+                ///End of the calculation
+                ///////////////////////////////////////////////////////////////////////
+            }
+            else
+            {
+                //Code for when there are no face matches.
+                MessageBox.Show("No face found in provided images.");
+            }
+            return 0;
+        }
         private async void UserSignIn(string username, string password)
         {
             //MessageBox.Show("We are inside the UserSignIn Function");
@@ -614,21 +616,21 @@ namespace FirstGUIAttempt
                                 if (databasePassword == password)
                                 {
                                     goToIntermediate.UpdateLabelsForLogin("PasswordMatchTickBox", "true");
+                                    Task<float> calculateAverageTask = CalculateFacialScoreAverage(databaseImage);
+                                    float averageFacialAnalysisScore = await calculateAverageTask;
+                                    goToIntermediate.UpdateLabelsForLogin("FacialAnalysisTickBox", averageFacialAnalysisScore.ToString());
                                     float keystrokeAnalysisConfidence = 1;
-                                    float facialAnalysisSimilarityConfidence;
                                     //MessageBox.Show("Passwords matched");
 
                                     //!We want all forms of authentication to occur, so we can call all three functions here and then decide later.
                                     //TODO FaceMatch Function
                                     //TODO Keystroke Function
                                     //TODO Face Liveness Function
-                                    //long confidenceScore = KeystrokeAnalysis(UserID);
-
-
+                                    //long confidenceScore = KeystrokeAnalysis(UserID)
                                     if (pasteFlag == true)
                                     {
                                         //TODO This needs to make sure the confidence score is lowered as user pasted in password
-                                        //keystrokeAnalysisConfidence = 0;
+                                        keystrokeAnalysisConfidence = 0;
                                         goToIntermediate.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
                                     }
                                     if(keystrokeAnalysisConfidence == 1)
@@ -638,51 +640,21 @@ namespace FirstGUIAttempt
                                         goToIntermediate.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
                                         //keystrokeAnalysisConfidence = 90;
                                     }
-                                    ////////////////////////////////////////////////////////////////////
-                                    ///This will calculate the average similarity from the photos taken
-                                    ////////////////////////////////////////////////////////////////////
-                                    List<float> allSimilarities = new List<float>(); //This is for all the photos taken
-                                    if (comparisonImageBase64.Count > 0) //This should always be true
-                                    {
-                                        foreach (string value in comparisonImageBase64)
-                                        {
-                                            allSimilarities.Add(FacialComparison(databaseImage, value));//This sends the photo and the database image
-                                        }
-                                        float totalSimilarity = 0; //This starts calculating the average
-                                        foreach (float value in allSimilarities)
-                                        {
-                                            totalSimilarity += value;
-                                        }
-                                        facialAnalysisSimilarityConfidence = totalSimilarity / allSimilarities.Count;
-                                        goToIntermediate.UpdateLabelsForLogin("FacialAnalysisTickBox", facialAnalysisSimilarityConfidence.ToString());
-                                        ////////////////////////////////////////////////////////////////////////
-                                        ///End of the calculation
-                                        ///////////////////////////////////////////////////////////////////////
-                                        float facialAnalysisValue = (float)(facialAnalysisSimilarityConfidence * 0.5);
-                                        float keystrokeAnalysisValue = (float)((keystrokeAnalysisConfidence*100) * 0.5);
-                                        float overallConfidence = facialAnalysisValue + keystrokeAnalysisValue;
 
-                                        Console.WriteLine("Facial Analysis Value: " + facialAnalysisValue);
-                                        Console.WriteLine("Keystroke Analysis Value: " + keystrokeAnalysisValue);
-                                        Console.WriteLine(overallConfidence);
-                                        if (overallConfidence >= 60)
-                                        {
-                                            InsertKeystrokes(username, 1);
-                                            MessageBox.Show("You've successfully logged in!");
-                                            //*Code for keystroke analysis
-                                        }
-                                        else
-                                        {
-                                            //Code for when not confident it is user
-                                            MessageBox.Show("User isn't the original user");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //Code for when there are no face matches.
-                                        MessageBox.Show("No face found in provided images.");
-                                    }
+                                    /////////////////////////////////////////////////////////////////////////////
+                                    ///At this point we have all of our similarity scores, so we are able to calculate our confidence score
+                                    /////////////////////////////////////////////////////////////////////////////
+                                    ///
+                                    float finalConfidence = ((float)(averageFacialAnalysisScore * 0.5) + (float)(keystrokeAnalysisConfidence * 0.5));                                    
                                     //MessageBox.Show(highestSimilarity.ToString());
+                                    if(finalConfidence >= 0.8)
+                                    {
+                                        MessageBox.Show("You have successfully logged in.");
+                                        if(keystrokeAnalysisConfidence > 0.75)
+                                        {
+                                            InsertKeystrokes(username, 0);
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -701,81 +673,23 @@ namespace FirstGUIAttempt
             }
         }
 
-        private long KeystrokeAnalysis(int UserID)
-        {
-            /*using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                List<Patterns> Patterns= new List<Patterns>();
-                MessageBox.Show("Connection Opened");
-                string sqlQuery = "SELECT Keystrokes, Expected FROM Keystrokes WHERE UserID = @UserID";
-                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
-                {
-                    //Add parameters to the command
-                    command.Parameters.AddWithValue("@UserID", UserID);
-                    MessageBox.Show("Parameters set.");
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        MessageBox.Show("DataReader executed");
-                        // Check if there are rows returned from the query
-                        if (reader.HasRows)
-                        {
-                            MessageBox.Show("Has Rows!");
-
-                            while (reader.Read())
-                            {
-                                MessageBox.Show("Now assigning values");
-                                //The reader object stores the database values as their headers
-                                Patterns currentSelection = new Patterns
-                                {
-                                    Username = reader["Username"].ToString(),
-                                    Keystroke = reader["Keystrokes"].ToString(),
-                                    Expected = Convert.ToInt32(reader["Expected"]),
-                                };
-                            }
-
-                            //TODO All the actual Python Machine Learning Function
-                            //! Passing over the value to the Python file.
-                            string jsonSerialization = JsonConvert.SerializeObject(Patterns);//Serialize the list into a JSON format
-                            ProcessStartInfo machineLearningStart = new ProcessStartInfo//Create our new process and provide parameters
-                            {
-                            FileName = "python",
-                            Arguments = $"Machine_Learning_Model.py {Patterns}",
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                        };
-
-                            using (Process process = Process.Start(machineLearningStart))//Start the program
-                            {
-                                using (StreamReader PythonReader = process.StandardOutput)
-                                {
-                                    string result = PythonReader.ReadToEnd();
-                                    long confidenceValue = long.Parse(result);//Parse back the value that will be returned.
-                                    Console.Write(confidenceValue);
-                                }
-                            }
-                        }
-                    }
-                }*/
-            return 0;
-        }
-
-/// <summary>
-/// Facial Comparison Function.
-/// Takes the two images, one stored in database for user and the one that is being uploaded and compares them
-/// Both images are converted into MemoryStreams from Base64 and sent to AWS Facial Rekognition.
-/// This sends back a similiarty % which can be then used for furhter processing.
-/// </summary>
-/// <param name="databaseImage"></param>
-/// <param name="comparisonImage"></param>
+        /// <summary>
+        /// Facial Comparison Function.
+        /// Takes the two images, one stored in database for user and the one that is being uploaded and compares them
+        /// Both images are converted into MemoryStreams from Base64 and sent to AWS Facial Rekognition.
+        /// This sends back a similiarty % which can be then used for furhter processing.
+        /// </summary>
+        /// <param name="databaseImage"></param>
+        /// <param name="comparisonImage"></param>
         //This function is called when using AWS API.
-        static float FacialComparison(string databaseImage, string comparisonImage)
+        async Task<float> FacialComparison(string databaseImage, string comparisonImage)
         {
-            //MessageBox.Show("Now inside the facial comparison function");
-            var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
+            float highestValue = 0;
+            await Task.Run(() =>
+            {
+                var awsCredentials = new Amazon.Runtime.BasicAWSCredentials("AKIAQ3EGUMLMQTICJUPB", "iRLnUHYMcr88EwSWMzW6iFEUiimGuDRFf1q9eYDI");
 
-            var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
+                var rekognitionClient = new AmazonRekognitionClient(awsCredentials, RegionEndpoint.GetBySystemName("eu-west-2"));
 
                 var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
                 var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
@@ -798,14 +712,13 @@ namespace FirstGUIAttempt
                 //MessageBox.Show("Calling the API");
                 CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
                 //List<float> allFaceMatchSimilarities = new List<float>();
-                float highestValue = 0;
                 // Process the response
                 if (compareFacesResponse.FaceMatches.Count > 0)
                 {
-                    
+
                     foreach (var faceMatch in compareFacesResponse.FaceMatches) //Uses a foreach incase multiple people are in frame
                     {
-                        if(highestValue <= faceMatch.Similarity)
+                        if (highestValue <= faceMatch.Similarity)
                         {
                             highestValue = faceMatch.Similarity;
                         }
@@ -821,8 +734,15 @@ namespace FirstGUIAttempt
                     MessageBox.Show("Please use a photo with your face in it.");
                     return highestValue;
                 }
-            return 0;
+                return highestValue;
             }
+            );
+            return highestValue;
+        }
+                
+            //MessageBox.Show("Now inside the facial comparison function");
+            
+            
 
         /// <summary>
         /// This function inserts values into the Keystroke Pattern table. This will always be executed on user login attempt.
