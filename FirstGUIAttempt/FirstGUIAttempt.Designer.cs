@@ -38,7 +38,8 @@
             this.SuspendLayout();
             // 
             // signIn
-            //
+            // 
+            this.signIn.Location = new System.Drawing.Point(199, 297);
             this.signIn.Name = "signIn";
             this.signIn.Size = new System.Drawing.Size(166, 67);
             this.signIn.TabIndex = 0;
@@ -48,6 +49,7 @@
             // 
             // signUp
             // 
+            this.signUp.Location = new System.Drawing.Point(199, 143);
             this.signUp.Name = "signUp";
             this.signUp.Size = new System.Drawing.Size(166, 68);
             this.signUp.TabIndex = 1;
@@ -60,37 +62,12 @@
             this.ClientSize = new System.Drawing.Size(600, 500);
             this.Controls.Add(this.signUp);
             this.Controls.Add(this.signIn);
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
             this.Name = "FirstGUIAttempt";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.ResumeLayout(false);
-            CalculateButtonPositions();
-            MaximumSize = Size;
-            MinimumSize = Size;
 
-
-        }
-        private void CalculateButtonPositions()
-        {
-            // Calculate the X-coordinate for centering the buttons
-            int centerX = (Width - signIn.Width) / 2;
-
-            // Set the Y-coordinate for button1
-            int button1Y = 50; // Example value, adjust as needed
-
-            // Set the Y-coordinate for button2
-            int button2Y = 100; // Example value, adjust as needed
-
-            // Set the location of the buttons
-            signIn.Location = new Point(centerX, button1Y + 100);
-            signUp.Location = new Point(centerX, button2Y + 200);
-        }
-
-        protected override void OnResizeEnd(EventArgs e)
-        {
-            base.OnResizeEnd(e);
-
-            // Recalculate button positions when the form is resized
-            CalculateButtonPositions();
         }
         #endregion
 

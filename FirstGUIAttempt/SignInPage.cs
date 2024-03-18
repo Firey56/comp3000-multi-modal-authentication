@@ -60,7 +60,7 @@ namespace FirstGUIAttempt
         int photoCount = 0;
         static Stopwatch photoStopwatch = new Stopwatch();
         List<string> finalKeystrokePattern = new List<string>();
-        IntermediatePage goToIntermediate = new IntermediatePage();
+        RealTimeForm goToRealTime = new RealTimeForm();
         
 
         //int loginAttempt = 0;
@@ -175,9 +175,11 @@ namespace FirstGUIAttempt
                 //CallPython();
                 if (InputSanitisation(usernameInput) == true)
                 {
-                    goToIntermediate = new IntermediatePage();
+                    goToRealTime = new RealTimeForm();
                     this.Hide();
-                    goToIntermediate.Show();
+                    goToRealTime.Show();
+                    string allUserInputs = "Password Correct \n" + "Photos Supplied: " + photoCount.ToString() + "\nKeystroke Analysis: Processing...";
+                    goToRealTime.UpdateLabelsForLogin("UserInputs", allUserInputs);
                     //this.Hide();
                     UserSignIn(usernameInput, hashedPassword);
                 }
@@ -615,10 +617,10 @@ namespace FirstGUIAttempt
                                 UserID = Int32.Parse(reader["UserID"].ToString());
                                 if (databasePassword == password)
                                 {
-                                    goToIntermediate.UpdateLabelsForLogin("PasswordMatchTickBox", "true");
+                                    goToRealTime.UpdateLabelsForLogin("PasswordMatchTickBox", "true");
                                     Task<float> calculateAverageTask = CalculateFacialScoreAverage(databaseImage);
                                     float averageFacialAnalysisScore = await calculateAverageTask;
-                                    goToIntermediate.UpdateLabelsForLogin("FacialAnalysisTickBox", averageFacialAnalysisScore.ToString());
+                                    goToRealTime.UpdateLabelsForLogin("FacialAnalysisTickBox", averageFacialAnalysisScore.ToString());
                                     float keystrokeAnalysisConfidence = 1;
                                     //MessageBox.Show("Passwords matched");
 
@@ -631,13 +633,17 @@ namespace FirstGUIAttempt
                                     {
                                         //TODO This needs to make sure the confidence score is lowered as user pasted in password
                                         keystrokeAnalysisConfidence = 0;
-                                        goToIntermediate.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+                                        goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+                                        
+
                                     }
-                                    if(keystrokeAnalysisConfidence == 1)
+                                    if (keystrokeAnalysisConfidence == 1)
                                     {
                                         Task<float> machineLearningTask = RunMachineLearningProcessAsync();
                                         keystrokeAnalysisConfidence = await machineLearningTask;
-                                        goToIntermediate.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+                                        goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+                                        string userInputs = "Password Correct \n" + "Photos Supplied: " + photoCount.ToString() + "\nKeystroke Analysis: Complete";
+                                        goToRealTime.UpdateLabelsForLogin("UserInputs", userInputs);
                                         //keystrokeAnalysisConfidence = 90;
                                     }
 
@@ -645,11 +651,15 @@ namespace FirstGUIAttempt
                                     ///At this point we have all of our similarity scores, so we are able to calculate our confidence score
                                     /////////////////////////////////////////////////////////////////////////////
                                     ///
-                                    float finalConfidence = ((float)(averageFacialAnalysisScore * 0.5) + (float)(keystrokeAnalysisConfidence * 0.5));                                    
+                                    float finalConfidence = ((float)(averageFacialAnalysisScore * 0.5) + (float)(keystrokeAnalysisConfidence * 100 * 0.5));
+                                    Console.WriteLine("Final Confidence: " + finalConfidence);
+                                    goToRealTime.UpdateLabelsForLogin("Decision", finalConfidence.ToString());
                                     //MessageBox.Show(highestSimilarity.ToString());
-                                    if(finalConfidence >= 0.8)
+                                    if (finalConfidence >= 0.8)
                                     {
+                                        
                                         MessageBox.Show("You have successfully logged in.");
+
                                         if(keystrokeAnalysisConfidence > 0.75)
                                         {
                                             InsertKeystrokes(username, 0);

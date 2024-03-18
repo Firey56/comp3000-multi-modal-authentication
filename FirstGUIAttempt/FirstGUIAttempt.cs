@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework;
 
 namespace FirstGUIAttempt
 {
@@ -19,7 +20,7 @@ namespace FirstGUIAttempt
 
         private void signIn_Click(object sender, EventArgs e)
         {
-            var goToSignIn = new RealTimeForm();
+            var goToSignIn = new SignInPage();
             goToSignIn.Show();
         }
 
