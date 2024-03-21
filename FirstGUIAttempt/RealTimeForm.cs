@@ -24,6 +24,7 @@ namespace FirstGUIAttempt
         private MetroFramework.Controls.MetroLabel UserInputsChangingLabel;
         private MetroFramework.Controls.MetroLabel DecisionText;
         private MetroFramework.Controls.MetroLabel DecisionChangingLabel;
+        private MetroFramework.Controls.MetroLabel FacialAnalysisChangingLabel;
 
 
 
@@ -160,6 +161,11 @@ namespace FirstGUIAttempt
                 Location = new System.Drawing.Point(centerX, centerY + 180),
                 Size = new System.Drawing.Size(100, 150)
             };
+            FacialAnalysisChangingLabel = new MetroFramework.Controls.MetroLabel
+            {
+                Location = new System.Drawing.Point(centerX-30, centerY +50),
+                Size = new System.Drawing.Size(100, 150)
+            };
 
 
 
@@ -182,6 +188,7 @@ namespace FirstGUIAttempt
             this.Controls.Add(DecisionChangingLabel);
             this.Controls.Add(PasswordMatchLabel);
             this.Controls.Add(FacialAnalysisText);
+            this.Controls.Add(FacialAnalysisChangingLabel);
         }
         public void UpdateLabelsForLogin(string labelUpdated, string data)
         {
