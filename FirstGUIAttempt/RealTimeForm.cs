@@ -25,6 +25,7 @@ namespace FirstGUIAttempt
         private MetroFramework.Controls.MetroLabel DecisionText;
         private MetroFramework.Controls.MetroLabel DecisionChangingLabel;
         private MetroFramework.Controls.MetroLabel FacialAnalysisChangingLabel;
+        private MetroFramework.Controls.MetroLabel DecisionTickBox;
 
 
 
@@ -119,6 +120,12 @@ namespace FirstGUIAttempt
                 Size = new System.Drawing.Size(30, 30)
             };
 
+            DecisionTickBox = new MetroFramework.Controls.MetroLabel
+            {
+                Location = new System.Drawing.Point(centerX+270, centerY),
+                Size = new System.Drawing.Size(30, 30)
+            };
+
 
 
 
@@ -163,7 +170,7 @@ namespace FirstGUIAttempt
             };
             FacialAnalysisChangingLabel = new MetroFramework.Controls.MetroLabel
             {
-                Location = new System.Drawing.Point(centerX-30, centerY +50),
+                Location = new System.Drawing.Point(centerX, centerY + 30),
                 Size = new System.Drawing.Size(100, 150)
             };
 
@@ -189,6 +196,7 @@ namespace FirstGUIAttempt
             this.Controls.Add(PasswordMatchLabel);
             this.Controls.Add(FacialAnalysisText);
             this.Controls.Add(FacialAnalysisChangingLabel);
+            this.Controls.Add(DecisionTickBox);
         }
         public void UpdateLabelsForLogin(string labelUpdated, string data)
         {
@@ -205,10 +213,12 @@ namespace FirstGUIAttempt
                     if (float.Parse(data) >= 0.6)
                     {
                         FacialAnalysisTickBox.Text = "✔";
+                        FacialAnalysisChangingLabel.Text = data;
                     }
                     else
                     {
                         FacialAnalysisTickBox.Text = "✘";
+                        FacialAnalysisChangingLabel.Text = data;
                     }
 
                     break;
@@ -227,10 +237,12 @@ namespace FirstGUIAttempt
                 case "Decision":
                     if(float.Parse(data) > 0.8)
                     {
+                        DecisionTickBox.Text = "✔";
                         DecisionChangingLabel.Text = data;
                     }
                     else
                     {
+                        DecisionChangingLabel.Text = data;
                         DecisionChangingLabel.Text = "✘";
                     }
                     break;
