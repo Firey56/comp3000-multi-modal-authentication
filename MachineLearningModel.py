@@ -1,32 +1,26 @@
-#This work will be annotated using the Better Comments Extension
-#! This is for notes and for things that need to be worked on, mainly error handling
-#? This is for questioning if this is finished or needs adding/reworking
-#*This text will highlight, this will mainly be for notes
-#//This should cross out any lines of code that are no longer needed or used during testing.
-#TODO This is for annotating work that needs to be implemented.
-
 from sklearn.ensemble import RandomForestClassifier
 import sys
 import json
 import pandas
 import random
 import numpy
-import os
 from sklearn.model_selection import train_test_split
 import pyodbc
 
-connectionString = pyodbc.connect(
-    driver="ODBC Driver 17 for SQL Server",
-    server="dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com",
-    database="Dissertation",
-    uid="admin",
-    pwd="V4F^E2Tt#M#p#bjj"
-)
+if __name__ == "__main__":
+    # Expecting two arguments: username and input string
+    if len(sys.argv) != 3:
+        print("Usage: python ml_script.py <username> <keystrokes>")
+        sys.exit(1)
+    username = sys.argv[1]
+    keystrokes = sys.argv[2]
+    keystrokes = keystrokes.split(',')
+    for word in keystrokes:
+        if word == "Keystroke":
+            keystrokes.remove('Keystroke')
+    reshapedInsertedData = numpy.array(keystrokes).reshape(1,-1)
 
-cursor = connectionString.cursor()
-cursor.execute("SELECT * FROM dbo.KeystrokeData")
-# Fetch all rows
-rows = cursor.fetchall()
+
 
 
 array_2d = []
@@ -36,16 +30,61 @@ standard_deviations = []#Create our standard deviation arrays
 poisonSamples = []
 numberOfPoisonSamplesWanted = 0
 concatenated_strings = []
+#insertedData = "Keystroke,123,Keystroke,110,Keystroke,169,Keystroke,237,Keystroke,126,Keystroke,135,Keystroke,174,Keystroke,170,Keystroke,120,Keystroke,78,Keystroke,92,Keystroke"
 ###########################################################
 #Read the objects
 ###########################################################
-columnNames = ["PatternNumber", "UserID", "Keystroke", "Expected"]
-fileLocation = "../../../KeystrokeExcel.xlsx"
-data = pandas.read_excel(fileLocation, names = columnNames)
-dataFrame = pandas.DataFrame(data)
 
+#columnNames = ["PatternNumber", "UserID", "Keystroke", "Expected"]
+#fileLocation = "KeystrokeExcel.xlsx"
+#data = pandas.read_excel("KeystrokeExcel.xlsx", names = columnNames)
+#dataFrame = pandas.DataFrame(data)
+
+connectionString = pyodbc.connect(
+    driver="ODBC Driver 17 for SQL Server",
+    server="dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com",
+    database="Dissertation",
+    uid="admin",
+    pwd="V4F^E2Tt#M#p#bjj"
+)
+
+
+# Create a cursor object
+cursor = connectionString.cursor()
+# Define the SELECT query
+cursor.execute("EXEC dissertation.GetKeystrokes @TableName=?", (username))
+# Execute the query
+# Fetch all rows
+rows = cursor.fetchall()
+allKeystrokeDataFrame = pandas.DataFrame(columns = ["Keystroke", "Expected"])
+#print(allKeystrokeDataFrame)
+    #print(eachRow)
+# Assuming eachRow is a list of value
+array_2d = []
+# Iterate over the rows
+for eachRow in rows:
+    # Convert eachRow to a numpy array
+    eachRow = numpy.array(eachRow)
+    # Append the row to the array
+    array_2d.append(eachRow)
+    
+# Convert the list to a numpy array for further processing
+array_2d = numpy.array(array_2d)
+#print(array_2d)
+
+# Convert the 2D array into a DataFrame
+dataFrame = pandas.DataFrame(array_2d, columns=["Keystroke", "Expected"])
+
+# Print the DataFrame
+#print(dataFrame)
+cursor.close()
+connectionString.close()
+
+#############################################################
+#At this point, we have read in our data and have it in a dataframe
+############################################################
 array_2d = [row.split() for row in dataFrame['Keystroke']]
-
+#print(array_2d)
 def remove_keystrokes_and_commas(text):
     words = text.split(',')
     words = [word for word in words if word != 'Keystroke']
@@ -60,11 +99,8 @@ def row_to_2d_array(row):
     # Convert list into a 2D array where each element is a list
     return [elements]
 
-dataFrame['Keystroke'] = dataFrame['Keystroke'].apply(remove_keystrokes_and_commas)
-#print(dataFrame)
 array_2d = numpy.concatenate(dataFrame['Keystroke'].apply(row_to_2d_array).tolist(), axis=0)
 
-#print(dataFrame)
 #############################################################
 #Finished 2D Array Creation
 #############################################################
@@ -112,17 +148,6 @@ for col_index in range(len(array_2d[0])):
 for i in range(len(column_arrays)):
     standard_deviations.append(numpy.std(column_arrays[i]))
 
-
-#print(array_2d)
-#print(len(standard_deviations))
-#print(len(columnAverages))
-#print(standard_deviations)
-#Add noise
-##############################################################################
-#Generate 10x the amount we have using just the averages
-##############################################################################
-#print(numberOfSamplesWanted)
-
 #Have a function that iterates for each sample generation
 numberOfPoisonSamplesWanted = len(array_2d)*3
 for i in range(numberOfPoisonSamplesWanted):
@@ -141,12 +166,6 @@ for i in range(numberOfPoisonSamplesWanted):
     
     i+= 1
 dataFrame['Keystroke'] = pandas.concat([dataFrame['Keystroke'],pandas.Series(poisonSamples)], ignore_index=True)
-
-#print(dataFrame)
-
-#print(poisonSamples)
-#Reconstruct the string
-#Sample created
 
 concatenated_strings = [','.join(map(str, row)) for row in poisonSamples]
 newData = {
@@ -167,7 +186,6 @@ finalDataFrame = pandas.DataFrame({
     'Expected': combined_expected
 })
 
-#print(finalDataFrame)
 finalDataFrame['Keystroke'] = finalDataFrame['Keystroke'].apply(remove_keystrokes_and_commas)
 new_array_2d = finalDataFrame.to_numpy()
 #print(new_array_2d)
@@ -193,53 +211,28 @@ y = numpy.array(targets)
 #print(scaled)
 X_train, X_test, Y_train, Y_test = train_test_split(x, y)
 
-def trainClassifier(updatedInsertArray):
+def trainClassifier(reshapedInsertedData):
     #print("Inside classifier")
-    classifierRandomForest = RandomForestClassifier(n_estimators=1000, max_depth=40, bootstrap=True, max_features=None)
+    classifierRandomForest = RandomForestClassifier(n_estimators=10000, max_depth=40, bootstrap=True, max_features=None)
     classifierRandomForest.fit(X_train, Y_train)
     accuracy = classifierRandomForest.score(X_test, Y_test)
     #print("Accuracy on test set:", accuracy)
-    #definitelyFakeData = [138,141,234,300,383,94,185,158,187,108,108,171]
+    #definitelyFakeData = [94,46,174,215,142,91,62,159,155,91,31,107]
     #new_sample_array = numpy.array(definitelyFakeData).reshape(1,-1)
-    prediction = classifierRandomForest.predict(updatedInsertArray)
-    estimates = classifierRandomForest.predict_proba(updatedInsertArray)
-    #print(prediction)
-    #print(estimates)
-    confidenceScore = 0
-    if prediction == 0:
-        confidenceScore = estimates[0,0]
-    else:
-        confidenceScore = estimates[0,1]
-
-    #print("Predicted Value: " + str(prediction) + " with Confidence Score " + str(confidenceScore*100) + "%")
-    #if estimates[0,0] >= 0.65:
-        #print("The user has reached the threshold for login at confidence score of: " + str(estimates[0,0]*100) + "%")
+    #prediction = classifierRandomForest.predict(reshapedInsertedData)
+    estimates = classifierRandomForest.predict_proba(reshapedInsertedData)
     print(estimates[0,0])
+    confidenceScore = 0
+    #if prediction == 0:
+    #    confidenceScore = estimates[0,0]
+    #else:
+    #    confidenceScore = estimates[0,1]
 
-if __name__ == "__main__":
-    # Expecting two arguments: username and input string
-    if len(sys.argv) != 3:
-        print("Usage: python ml_script.py <username> <keystrokes>")
-        sys.exit(1)
-    username = sys.argv[1]
-    keystrokes = sys.argv[2]
+#updatedInsert = remove_keystrokes_and_commas(insertedData)
+#updatedInsertArray = row_to_2d_array(updatedInsert)
 
+#print(insertedData)
 
-insertedData = rows.split(',')
-for word in insertedData:
-    if word == "Keystroke":
-        insertedData.remove('Keystroke')
-reshapedInsertedData = numpy.array(insertedData).reshape(1,-1)
 #print(reshapedInsertedData)
 result = trainClassifier(reshapedInsertedData)
 sys.exit()
-#updatedInsertArray = row_to_2d_array(updatedInsert)
-#trainClassifier(updatedInsertArray)
-#print("Prediction:", prediction)
-# Obtain probability estimates for each class
-
-#probabilities = classifierRandomForest.predict_proba(definitelyFakeData)
-
-# Calculate confidence score (maximum probability among predicted probabilities)
-#confidence_scores = probabilities.max(axis=1)
-#print(confidence_scores)

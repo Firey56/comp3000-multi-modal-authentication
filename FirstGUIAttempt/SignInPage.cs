@@ -266,9 +266,9 @@ namespace FirstGUIAttempt
                         string numericalValue = outputLines[outputLines.Length - 2].Trim(); // Remove the previous values from the array
 
                         // Parse the numerical value
-                        if (!string.IsNullOrEmpty(numericalValue))//Ensures we have a number
+                        if (!string.IsNullOrEmpty(result))//Ensures we have a number
                         {
-                            if (float.TryParse(numericalValue, out estimate))
+                            if (float.TryParse(result, out estimate))
                             {
                                 Console.WriteLine("Estimate from Python script: " + estimate);
                                 // Use the estimate in further processing
@@ -510,6 +510,7 @@ namespace FirstGUIAttempt
                     keyboardTimer.Stop();
                     keyboardTimer.Reset();
                     keystrokePattern.Clear();
+                    finalKeystrokePattern.Clear();
                     
                     //keystrokePattern.Add(keyboardTimer.ElapsedMilliseconds);
                 }
@@ -522,7 +523,7 @@ namespace FirstGUIAttempt
 
                 //keyboardTimer.Reset();
             }
-            if (keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 200)
+            if (keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 100)
             {
                 TakePhoto();
             }
@@ -661,7 +662,7 @@ namespace FirstGUIAttempt
                                         
                                         MessageBox.Show("You have successfully logged in.");
 
-                                        if(keystrokeAnalysisConfidence > 0.75)
+                                        if(keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
                                         {
                                             InsertKeystrokes(username, 0);
                                         }
