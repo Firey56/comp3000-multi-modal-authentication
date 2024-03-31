@@ -142,4 +142,5 @@ F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIA
 F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\de\MahApps.Metro.resources.dll
 F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.IntermediatePage.resources
 F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.RealTimeForm.resources
-C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csprojAssemblyReference.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.AssemblyReference.cache
+C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.csproj.SuggestedBindingRedirects.cache

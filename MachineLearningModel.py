@@ -13,6 +13,20 @@ import random
 import numpy
 import os
 from sklearn.model_selection import train_test_split
+import pyodbc
+
+connectionString = pyodbc.connect(
+    driver="ODBC Driver 17 for SQL Server",
+    server="dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com",
+    database="Dissertation",
+    uid="admin",
+    pwd="V4F^E2Tt#M#p#bjj"
+)
+
+cursor = connectionString.cursor()
+cursor.execute("SELECT * FROM dbo.KeystrokeData")
+# Fetch all rows
+rows = cursor.fetchall()
 
 
 array_2d = []
@@ -211,7 +225,7 @@ if __name__ == "__main__":
     keystrokes = sys.argv[2]
 
 
-insertedData = keystrokes.split(',')
+insertedData = rows.split(',')
 for word in insertedData:
     if word == "Keystroke":
         insertedData.remove('Keystroke')

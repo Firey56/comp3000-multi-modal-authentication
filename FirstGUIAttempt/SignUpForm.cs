@@ -21,8 +21,9 @@ namespace FirstGUIAttempt
     public partial class SignUpForm : Form
     {
         string base64Image = null;
-        private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        //private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
         readonly static List<long> keystrokePattern = new List<long>();
         readonly static Stopwatch keyboardTimer = new Stopwatch();
         readonly static List<string> finalKeystrokePattern = new List<string>();
@@ -112,10 +113,10 @@ namespace FirstGUIAttempt
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-
+                    bool success = false;
                     // Insert data into the database
                     //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
-                    using(SqlCommand command = new SqlCommand("UserSignUp", connection))
+                    using(SqlCommand command = new SqlCommand("dissertation.UserSignUp", connection))
                     {
                         Console.WriteLine("We are inside the command.");
                         command.CommandType = CommandType.StoredProcedure;
@@ -135,7 +136,9 @@ namespace FirstGUIAttempt
 
                         if (rowsAffected > 0)
                         {
+                            success = true;
                             MessageBox.Show("Data inserted successfully into the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                         }
                         else
                         {
@@ -143,6 +146,11 @@ namespace FirstGUIAttempt
                         }
 
                     }
+                    if (success)
+                    {
+                        InsertKeystrokes(username, 0);
+                    }
+                    connection.Close();
                     //TODO If unable to get database trigger to work, create stored procedure that creates the table using existing username variable
                 }
             }
@@ -329,7 +337,44 @@ namespace FirstGUIAttempt
 
             base.OnFormClosing(e);
         }
+        private void InsertKeystrokes(string Username, int Expected)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
 
+                    // Insert data into the database
+                    //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
+                    using (SqlCommand command = new SqlCommand("dissertation.InsertKeystrokesIntoDynamicTable", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@tableName", Username); ;
+                        string csv = string.Join(",", finalKeystrokePattern);
+                        command.Parameters.AddWithValue("@keystrokes", csv);
+                        command.Parameters.AddWithValue("@Expected", 0);
+                        //*MessageBox.Show(@"{username}, {password}, {filePath}");
+                        // Execute the query
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Data inserted successfully into the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to insert data into the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void signUpUsernameTextbox(object sender, EventArgs e)
         {
 
