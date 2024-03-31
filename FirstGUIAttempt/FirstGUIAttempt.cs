@@ -20,7 +20,7 @@ namespace FirstGUIAttempt
 
         private void signIn_Click(object sender, EventArgs e)
         {
-            var goToSignIn = new SignInPage();
+            var goToSignIn = new TestForm();
             goToSignIn.Show();
         }
 
