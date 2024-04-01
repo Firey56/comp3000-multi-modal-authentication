@@ -592,7 +592,8 @@ namespace FirstGUIAttempt
                 connection.Open();
                 int UserID;
                 //MessageBox.Show("Connection Opened");
-                string sqlQuery = "SELECT * FROM dissertation.users WHERE Username = @Username";
+                //TODO MAKE THIS A STORED PROCEDURE
+                string sqlQuery = "SELECT * FROM Authentication.Users WHERE Username = @Username";
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     //Add parameters to the command
@@ -615,7 +616,8 @@ namespace FirstGUIAttempt
                                 //This section can be probably changed to be a stored procedure to be more secure.
                                 string databaseUsername = reader["Username"].ToString();
                                 string databasePassword = reader["Password"].ToString();
-                                string databaseImage = reader["image"].ToString();
+                                string databaseImage = reader["Image"].ToString();
+                                int databaseUserType = Int32.Parse(reader["UserType"].ToString());
                                 UserID = Int32.Parse(reader["UserID"].ToString());
                                 if (databasePassword == password)
                                 {
@@ -659,7 +661,17 @@ namespace FirstGUIAttempt
                                     //MessageBox.Show(highestSimilarity.ToString());
                                     if (finalConfidence >= 0.8)
                                     {
-                                        
+                                        //TODO Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
+                                        if(databaseUserType == 1)
+                                        {
+                                            TestForm AdminPage = new TestForm();
+                                            AdminPage.Show();   
+                                        }
+                                        else
+                                        {
+                                            UserForm RegularUserPage = new UserForm("Deleted");
+                                            RegularUserPage.Show();
+                                        }
                                         MessageBox.Show("You have successfully logged in.");
 
                                         if(keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
@@ -772,12 +784,12 @@ namespace FirstGUIAttempt
 
                     // Insert data into the database
                     //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
-                    using (SqlCommand command = new SqlCommand("dissertation.InsertKeystrokesIntoDynamicTable", connection))
+                    using (SqlCommand command = new SqlCommand("Authentication.InsertKeystrokesIntoDynamicTable", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@tableName", Username);;
+                        command.Parameters.AddWithValue("@TableName", Username);;
                         string csv = string.Join(",", finalKeystrokePattern);
-                        command.Parameters.AddWithValue("@keystrokes", csv);
+                        command.Parameters.AddWithValue("@Keystrokes", csv);
                         command.Parameters.AddWithValue("@Expected", 0);
                         //*MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query

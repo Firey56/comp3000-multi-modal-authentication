@@ -29,25 +29,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.CurrentUsersListBox = new System.Windows.Forms.ListBox();
+            this.DeletedUsersListBox = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
-            // listBox1
+            // CurrentUsersListBox
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 20;
-            this.listBox1.Location = new System.Drawing.Point(93, 61);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(1290, 804);
-            this.listBox1.TabIndex = 0;
-            listBox1.DoubleClick += listBox1_DoubleClick;
+            this.CurrentUsersListBox.FormattingEnabled = true;
+            this.CurrentUsersListBox.ItemHeight = 20;
+            this.CurrentUsersListBox.Location = new System.Drawing.Point(93, 61);
+            this.CurrentUsersListBox.Name = "CurrentUsersListBox";
+            this.CurrentUsersListBox.Size = new System.Drawing.Size(380, 764);
+            this.CurrentUsersListBox.TabIndex = 0;
+            // 
+            // DeletedUsersListBox
+            // 
+            this.DeletedUsersListBox.FormattingEnabled = true;
+            this.DeletedUsersListBox.ItemHeight = 20;
+            this.DeletedUsersListBox.Location = new System.Drawing.Point(1002, 61);
+            this.DeletedUsersListBox.Name = "DeletedUsersListBox";
+            this.DeletedUsersListBox.Size = new System.Drawing.Size(408, 764);
+            this.DeletedUsersListBox.TabIndex = 1;
             // 
             // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1582, 1115);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.DeletedUsersListBox);
+            this.Controls.Add(this.CurrentUsersListBox);
             this.Name = "TestForm";
             this.Text = "TestForm";
             this.ResumeLayout(false);
@@ -57,6 +67,7 @@
         #endregion
 
 
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox CurrentUsersListBox;
+        private System.Windows.Forms.ListBox DeletedUsersListBox;
     }
 }

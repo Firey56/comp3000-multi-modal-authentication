@@ -10,21 +10,33 @@ import pyodbc
 if __name__ == "__main__":
     # Expecting two arguments: username and input string
     if len(sys.argv) != 3:
-        print("Usage: python ml_script.py <username> <keystrokes>")
+        print("Usage: MachineLearningModel.py <username> <keystrokes>")
         sys.exit(1)
     username = sys.argv[1]
     keystrokes = sys.argv[2]
-    keystrokes = keystrokes.split(',')
+    keystrokes = keystrokes.split(',')#Seperate Keystroke,Number,Keystroke
     for word in keystrokes:
-        if word == "Keystroke":
+        if word == "Keystroke":#Remove Keystroke wording
             keystrokes.remove('Keystroke')
-    reshapedInsertedData = numpy.array(keystrokes).reshape(1,-1)
+    reshapedInsertedData = numpy.array(keystrokes).reshape(1,-1)#Reshape into the correct format for the model
 
 
+def remove_keystrokes_and_commas(text):
+    words = text.split(',')
+    words = [word for word in words if word != 'Keystroke']
+    return ','.join(words)
 
+
+def row_to_2d_array(row):
+    # Split the row by commas and create a list
+    elements = row.split(',')
+    # Remove 'Keystroke' from the list
+    elements = [float(e) for e in elements if e != 'Keystroke']
+    # Convert list into a 2D array where each element is a list
+    return [elements]
 
 array_2d = []
-columnAverages = []
+columnAverages = []#For generating later in the model
 column_arrays = []#Array for each keyset (this will take the timing between keystroke 1 and 2 of every sample)
 standard_deviations = []#Create our standard deviation arrays
 poisonSamples = []
@@ -51,13 +63,10 @@ connectionString = pyodbc.connect(
 
 # Create a cursor object
 cursor = connectionString.cursor()
-# Define the SELECT query
+# Execute the view
 cursor.execute("EXEC dissertation.GetKeystrokes @TableName=?", (username))
-# Execute the query
 # Fetch all rows
 rows = cursor.fetchall()
-allKeystrokeDataFrame = pandas.DataFrame(columns = ["Keystroke", "Expected"])
-#print(allKeystrokeDataFrame)
     #print(eachRow)
 # Assuming eachRow is a list of value
 array_2d = []
@@ -73,31 +82,19 @@ array_2d = numpy.array(array_2d)
 #print(array_2d)
 
 # Convert the 2D array into a DataFrame
-dataFrame = pandas.DataFrame(array_2d, columns=["Keystroke", "Expected"])
+dataFrame = pandas.DataFrame(array_2d, columns=["Keystroke", "Expected"])#Has every row from the database for the user.
 
 # Print the DataFrame
 #print(dataFrame)
-cursor.close()
+cursor.close()#Close our query and connection
 connectionString.close()
 
 #############################################################
 #At this point, we have read in our data and have it in a dataframe
 ############################################################
-array_2d = [row.split() for row in dataFrame['Keystroke']]
+array_2d = [row.split() for row in dataFrame['Keystroke']]#Splitting each row on Keystroke
 #print(array_2d)
-def remove_keystrokes_and_commas(text):
-    words = text.split(',')
-    words = [word for word in words if word != 'Keystroke']
-    return ','.join(words)
 
-
-def row_to_2d_array(row):
-    # Split the row by commas and create a list
-    elements = row.split(',')
-    # Remove 'Keystroke' from the list
-    elements = [float(e) for e in elements if e != 'Keystroke']
-    # Convert list into a 2D array where each element is a list
-    return [elements]
 
 array_2d = numpy.concatenate(dataFrame['Keystroke'].apply(row_to_2d_array).tolist(), axis=0)
 
@@ -126,8 +123,6 @@ for col_index in range(len(array_2d[0])):
     # Append the average to the list of column averages
     columnAverages.append(col_average)
 
-#Create X amount of arrays of Y length depending on samples
-
 #Calculate standard deviations
 
 # Iterate over columns
@@ -149,16 +144,16 @@ for i in range(len(column_arrays)):
     standard_deviations.append(numpy.std(column_arrays[i]))
 
 #Have a function that iterates for each sample generation
-numberOfPoisonSamplesWanted = len(array_2d)*3
+numberOfPoisonSamplesWanted = len(array_2d)*3#Don't want an overly saturated poisoned amount, adjust as needed
 for i in range(numberOfPoisonSamplesWanted):
-    newSample = []
+    newSample = []#Current sample iteration
     for j in range(len(columnAverages)):
-        newRandom = random.randint(-2,2)
-        noise = random.randint(-20,20)
-        if(columnAverages[j] + newRandom*standard_deviations[j] + noise <= 0):
-            newSample.append(100)
+        newRandom = random.randint(-2,2)#Random generation of number based on average
+        noise = random.randint(-20,20)#Random noise to add to the sample
+        if(columnAverages[j] + newRandom*standard_deviations[j] + noise <= 0): #Checks if we have a negative time
+            newSample.append(100)#Just assign 100 for calculation sake
         else:
-            newSample.append(round(columnAverages[j] + newRandom*standard_deviations[j] + noise))
+            newSample.append(round(columnAverages[j] + newRandom*standard_deviations[j] + noise))#This is our new timing for the keystroke pair
         #print(newSample)
         j+= 1
     #print(newSample)

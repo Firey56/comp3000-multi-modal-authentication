@@ -116,19 +116,14 @@ namespace FirstGUIAttempt
                     bool success = false;
                     // Insert data into the database
                     //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
-                    using(SqlCommand command = new SqlCommand("dissertation.UserSignUp", connection))
+                    using(SqlCommand command = new SqlCommand("Authentication.UserSignUp", connection))
                     {
                         Console.WriteLine("We are inside the command.");
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
                         //string newFilePath = InsertPhotoIntoLocation(username, theImageData);
-                        command.Parameters.AddWithValue("@image", base64Image);
-                        string csv = string.Join(",", finalKeystrokePattern);
-                        command.Parameters.AddWithValue("@Keystrokes", csv);
-                        MessageBox.Show(username);
-                        MessageBox.Show(password);
-                        MessageBox.Show(csv);
+                        command.Parameters.AddWithValue("@Image", base64Image);
 
                         //MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
@@ -347,12 +342,12 @@ namespace FirstGUIAttempt
 
                     // Insert data into the database
                     //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
-                    using (SqlCommand command = new SqlCommand("dissertation.InsertKeystrokesIntoDynamicTable", connection))
+                    using (SqlCommand command = new SqlCommand("Authentication.InsertKeystrokesIntoDynamicTable", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@tableName", Username); ;
+                        command.Parameters.AddWithValue("@TableName", Username); ;
                         string csv = string.Join(",", finalKeystrokePattern);
-                        command.Parameters.AddWithValue("@keystrokes", csv);
+                        command.Parameters.AddWithValue("@Keystrokes", csv);
                         command.Parameters.AddWithValue("@Expected", 0);
                         //*MessageBox.Show(@"{username}, {password}, {filePath}");
                         // Execute the query
