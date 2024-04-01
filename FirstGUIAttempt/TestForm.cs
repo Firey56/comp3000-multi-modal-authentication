@@ -296,6 +296,7 @@ namespace FirstGUIAttempt
 
                 // Show the new form
                 UserForm.Show();
+                UserForm.FormClosed += UserForm_FormClosed;
             }
         }private void DeletedUsersListBox_DoubleClick(object sender, EventArgs e)
         {
@@ -318,8 +319,19 @@ namespace FirstGUIAttempt
 
                 // Show the new form
                 UserForm.Show();
+                UserForm.FormClosed += UserForm_FormClosed;
             }
         }
-        
+        private void UserForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Perform the desired action here
+            // For example, show a message box or update some UI element in Form1
+            CurrentUsersListBox.Items.Clear();
+            DeletedUsersListBox.Items.Clear();
+            LoadDataIntoListBox("SELECT * FROM Authentication.AllUsersView", "CurrentUsers");
+            LoadDataIntoListBox("SELECT * FROM Authentication.AllDeletedUsersView", "DeletedUsers");
+        }
+
+
     }
-    }
+}

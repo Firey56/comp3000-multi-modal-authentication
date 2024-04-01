@@ -103,7 +103,7 @@ namespace FirstGUIAttempt
             this.MinimumSize = Size;
             this.Load += UserForm_load;
             DeleteAccountButton.Click += DeleteAccountButton_Click;
-            RecoverAccountButton.Click += DeleteAccountButton_Click;
+            RecoverAccountButton.Click += RecoverAccountButton_Click;
             ChangeAdminButton.Click += ChangeAdminButton_Click;
 
         }
@@ -197,7 +197,7 @@ namespace FirstGUIAttempt
 
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("User Deleted", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show("User Recovered", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             this.Close();
 
                         }
