@@ -24,30 +24,15 @@ using System.Text.RegularExpressions;
 
 namespace FirstGUIAttempt
 {
-    public partial class SignInPage : Form
+    public partial class NewSignInForm : Form
     {
-        public SignInPage()
-        {
-            Application.EnableVisualStyles();
-            InitializeComponent();
-            ApplyFontSettings();
-            InitializeWebcam();
-            passwordInputTextBox.KeyDown += password_KeyPress;
-            passwordInputTextBox.TextChanged += passwordInput_TextChanged;
-            this.ClientSize = new Size(600, 500);
-            this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;
-            //passwordInputTextBox.KeyUp += password_KeyUp;
-        }
+        private System.Windows.Forms.Label UsernameLabel = new System.Windows.Forms.Label();
+        private System.Windows.Forms.Label PasswordLabel = new System.Windows.Forms.Label();
+        private TextBox UsernameTextBox = new TextBox();
+        private TextBox PasswordTextBox = new TextBox();
+        private PictureBox PhotoBox = new PictureBox();
+        private Button SubmitButton = new Button();
 
-        /// <summary>
-        /// This project will be annotated with the BetterComments Extension
-        /// Code will be annotated as following:
-        // TODO: This is future work that needs doing
-        // ! This is for notes throughout the project.
-        // ? This is for questioning whether what is done is correct, and if it should be redone
-        // * This will indicate crossed out code.
-        /// </summary>
         private VideoCaptureDevice videoSource;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
@@ -61,8 +46,55 @@ namespace FirstGUIAttempt
         List<string> finalKeystrokePattern = new List<string>();
         RealTimeForm goToRealTime = new RealTimeForm();
 
+        public NewSignInForm()
+        {
+            InitializeComponent();
+            Application.EnableVisualStyles();
+            InitializeComponent();
+            ApplyFontSettings();
+            InitializeWebcam();
+            PasswordTextBox.KeyDown += Password_KeyPress;
+            PasswordTextBox.TextChanged += PasswordTextBox_TextChanged;
+            SubmitButton.Click += Submit;
 
-        //int loginAttempt = 0;
+            this.ClientSize = new Size(600, 500);
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
+
+
+            UsernameLabel.Location = new System.Drawing.Point(125, 80);
+            UsernameLabel.AutoSize = true;
+            UsernameLabel.Text = "Username";
+            this.Controls.Add(UsernameLabel);
+            UsernameTextBox.Location = new System.Drawing.Point(130, 110);
+            UsernameTextBox.Size = new Size(300, 40);
+            this.Controls.Add(UsernameTextBox);
+
+
+            PasswordLabel.Location = new System.Drawing.Point(125, 220);
+            PasswordLabel.AutoSize = true;
+            PasswordLabel.Text = "Password";
+            this.Controls.Add(PasswordLabel);
+            PasswordTextBox.Location = new System.Drawing.Point(130, 250);
+            PasswordTextBox.Size = new Size(300, 40);
+            PasswordTextBox.PasswordChar = '*';
+            this.Controls.Add(PasswordTextBox);
+
+
+            PhotoBox.Location = new System.Drawing.Point(180, 300);
+            PhotoBox.Size = new Size(200, 130);
+            this.Controls.Add(PhotoBox);
+
+
+            SubmitButton.Location = new System.Drawing.Point(240, 440);
+            SubmitButton.AutoSize = true;
+            SubmitButton.Text = "Submit";
+            this.Controls.Add(SubmitButton);
+        }
+        private void Submit(object sender, EventArgs e)
+        {
+            UserSubmit();
+        }
 
         private void ApplyFontSettings()
         {
@@ -82,32 +114,13 @@ namespace FirstGUIAttempt
                 }
             }
         }
-        private void userNameInput(object sender, EventArgs e)
-        {
 
-        }
-
-        private void usernameLabel(object sender, EventArgs e)
-        {
-
-        }
-
-        private void passwordLabel(object sender, EventArgs e)
-        {
-
-        }
-
-        private void passwordInput(object sender, EventArgs e)
-        {
-
-        }
-
-        private void passwordInput_TextChanged(object sender, EventArgs e)
+        private void PasswordTextBox_TextChanged(object sender, EventArgs e)
         {
             if (Clipboard.ContainsText())
             {
 
-                if (Clipboard.GetText() == passwordInputTextBox.Text)
+                if (Clipboard.GetText() == PasswordTextBox.Text)
                 {
                     //pasteFlag = true;
                     Console.WriteLine("Pasted info and clipboard are the same");
@@ -115,51 +128,10 @@ namespace FirstGUIAttempt
             }
         }
 
-        /// <summary>
-        /// Function for when the user clicks "Take Photo".
-        /// This creates a bitmap of the user image and then converts this into a base64 string for face comparison.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /*private void takePhotoButton_Click(object sender, EventArgs e)
-        {
-            // Check if there is an image in the PictureBox
-            if (photoUploadButton.Image != null)
-            {
-                // Capture the current image from the PictureBox
-                Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
-                videoSource.SignalToStop();
-                videoSource.WaitForStop();
-
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    // Save the Bitmap to the MemoryStream
-                    capturedImage.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-
-                    // Convert the MemoryStream to a byte array
-                    byte[] byteArray = memoryStream.ToArray();
-
-                    // Convert the byte array to a Base64 string
-                    comparisonImageBase64.Add(Convert.ToBase64String(byteArray));
-                }
-
-                // Dispose the captured image
-                capturedImage.Dispose();
-            }
-            else
-            {
-                MessageBox.Show("No image to capture. Ensure the webcam is providing a video stream.");
-            }
-        }*/
-
-        /// <summary>
-        /// This section assigns our variables from the user input text and checks if they've been input
-        /// </summary>
-        /// 
         private void UserSubmit()
         {
-            string usernameInput = usernameInputTextBox.Text;
-            string hashedPassword = HashPassword(passwordInputTextBox.Text);
+            string usernameInput = UsernameTextBox.Text;
+            string hashedPassword = HashPassword(PasswordTextBox.Text);
             //Makes the list of the timings of the keystroke
             //Our new list with keystrokes + timings
             if (finalKeystrokePattern.Count == 0)
@@ -178,9 +150,6 @@ namespace FirstGUIAttempt
 
                 }
             }
-
-            //MessageBox.Show(usernameInput);
-            //MessageBox.Show(passwordInput);
             if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
             {
                 // MessageBox.Show("We are inside the SubmitButton function");
@@ -209,12 +178,6 @@ namespace FirstGUIAttempt
                 MessageBox.Show("Please fill in all fields!");
             }
         }
-        private void submit(object sender, EventArgs e)
-        {
-            UserSubmit();
-            
-        }
-
         public bool InputSanitisation(string checkUsername)
         {
             ///////////////////////////////////////////////////////////////////////////////
@@ -243,7 +206,6 @@ namespace FirstGUIAttempt
                 return true;
             }
         }
-
         async Task<float> RunMachineLearningProcessAsync()
         {
             // Your code to run the machine learning process asynchronously
@@ -261,7 +223,7 @@ namespace FirstGUIAttempt
                 // Prepare process start information
                 ProcessStartInfo start = new ProcessStartInfo();
                 start.FileName = pythonInterpreter;
-                start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", pythonScript, usernameInputTextBox.Text, csv);
+                start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", pythonScript, UsernameTextBox.Text, csv);
                 start.UseShellExecute = false;
                 start.RedirectStandardOutput = true;
                 start.CreateNoWindow = true;
@@ -298,34 +260,6 @@ namespace FirstGUIAttempt
             });
             return estimate;
         }
-
-
-        /// <summary>
-        /// This section is used to actually complete the user sign in. It establishes a database connection
-        /// and selects all the data available for the user. This will be their UID, username, hashed password and b64 of the image.
-        /// 
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="comparisonImage"></param>
-
-        /// <summary>
-        /// Facial Comparison Function.
-        /// Takes the two images, one stored in database for user and the one that is being uploaded and compares them
-        /// Both images are converted into MemoryStreams from Base64 and sent to AWS Facial Rekognition.
-        /// This sends back a similiarty % which can be then used for furhter processing.
-        /// </summary>
-        /// <param name="databaseImage"></param>
-        /// <param name="comparisonImage"></param>
-        //This function is called when using AWS API.
-
-        /// <summary>
-        /// This function hashes the password using SHA256 hashing and then gets it converted to a string for storage and comparison.
-        /// 
-        /// This function could be further enhanced using Argon2, but would need to think about salt generation and storage.
-        /// </summary>
-        /// <param name="password"></param>
-        /// <returns></returns>
         private string HashPassword(string password)
         {
             byte[] passwordAsBytes;
@@ -345,9 +279,6 @@ namespace FirstGUIAttempt
                 return hashedInput;
             }
         }
-        /// <summary>
-        /// This function allows for the webcam to be accessible using a Video Source using AForge libraries.
-        /// </summary>
         private void InitializeWebcam()
         {
             // Get the list of available video devices (webcams)
@@ -377,9 +308,9 @@ namespace FirstGUIAttempt
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
-            Size newSize = CalculateSizeToFit(originalFrame.Size, photoUploadButton.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
+            Size newSize = CalculateSizeToFit(originalFrame.Size, PhotoBox.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
             Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
-            photoUploadButton.Image = resizedFrame;
+            PhotoBox.Image = resizedFrame;
 
             // Dispose of old frame
             originalFrame.Dispose();
@@ -451,7 +382,7 @@ namespace FirstGUIAttempt
             if (photoCount <= 5)
             {
                 //*Console.WriteLine("inside photo count");
-                if (photoUploadButton.Image != null)
+                if (PhotoBox.Image != null)
                 {
                     if (!photoStopwatch.IsRunning)
                     {
@@ -468,7 +399,7 @@ namespace FirstGUIAttempt
 
                     photoStopwatch.Restart();
                     // Capture the current image from the PictureBox
-                    Bitmap capturedImage = (Bitmap)photoUploadButton.Image.Clone();
+                    Bitmap capturedImage = (Bitmap)PhotoBox.Image.Clone();
                     //*videoSource.SignalToStop();
                     //*videoSource.WaitForStop();
 
@@ -504,7 +435,7 @@ namespace FirstGUIAttempt
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void password_KeyPress(object sender, KeyEventArgs e)
+        private void Password_KeyPress(object sender, KeyEventArgs e)
         {
 
             //Console.WriteLine("Down");
@@ -521,12 +452,12 @@ namespace FirstGUIAttempt
                 if (e.KeyCode == Keys.Back)
                 {//TODO make sure this is changed so that it doesn't crash if they press backspace when empty
                     keystrokePattern.Clear();
-                    passwordInputTextBox.Text = "";
+                    PasswordTextBox.Text = "";
                     keyboardTimer.Stop();
                     keyboardTimer.Reset();
                     keystrokePattern.Clear();
                     finalKeystrokePattern.Clear();
-                    
+
                     //keystrokePattern.Add(keyboardTimer.ElapsedMilliseconds);
                 }
                 else
@@ -534,7 +465,7 @@ namespace FirstGUIAttempt
                     long currentTime = keyboardTimer.ElapsedMilliseconds;
                     keystrokePattern.Add(currentTime);
                 }
-                
+
 
                 //keyboardTimer.Reset();
             }
@@ -653,7 +584,7 @@ namespace FirstGUIAttempt
                                         //TODO This needs to make sure the confidence score is lowered as user pasted in password
                                         keystrokeAnalysisConfidence = 0;
                                         goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
-                                        
+
 
                                     }
                                     if (keystrokeAnalysisConfidence == 1)
@@ -677,10 +608,10 @@ namespace FirstGUIAttempt
                                     if (finalConfidence >= 0.8)
                                     {
                                         //TODO Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
-                                        if(databaseUserType == 1)
+                                        if (databaseUserType == 1)
                                         {
                                             AdminForm AdminPage = new AdminForm();
-                                            AdminPage.Show();   
+                                            AdminPage.Show();
                                         }
                                         else
                                         {
@@ -692,7 +623,7 @@ namespace FirstGUIAttempt
                                         }
                                         MessageBox.Show("You have successfully logged in.");
 
-                                        if(keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
+                                        if (keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
                                         {
                                             InsertKeystrokes(username, 0);
                                         }
@@ -711,9 +642,9 @@ namespace FirstGUIAttempt
                         }
                     }
                 }
-
             }
         }
+
 
         /// <summary>
         /// Facial Comparison Function.
@@ -736,7 +667,7 @@ namespace FirstGUIAttempt
                 var dbImage = new MemoryStream(Convert.FromBase64String(databaseImage));//Create Image Stream for DB Image
                 var uploadImage = new MemoryStream(Convert.FromBase64String(comparisonImage));//Create Image Stream for Uploaded Image
 
-                //*MessageBox.Show("Image memory streams created");
+            //*MessageBox.Show("Image memory streams created");
                 var compareFacesRequest = new CompareFacesRequest
                 {
                     SourceImage = new Amazon.Rekognition.Model.Image
@@ -749,12 +680,12 @@ namespace FirstGUIAttempt
                     },
                     SimilarityThreshold = 0,
                 };
-                // Call Amazon Rekognition API to compare faces
+            // Call Amazon Rekognition API to compare faces
 
-                //MessageBox.Show("Calling the API");
+            //MessageBox.Show("Calling the API");
                 CompareFacesResponse compareFacesResponse = rekognitionClient.CompareFaces(compareFacesRequest);
-                //List<float> allFaceMatchSimilarities = new List<float>();
-                // Process the response
+            //List<float> allFaceMatchSimilarities = new List<float>();
+            // Process the response
                 if (compareFacesResponse.FaceMatches.Count > 0)
                 {
 
@@ -766,9 +697,9 @@ namespace FirstGUIAttempt
                         }
                         Console.WriteLine("Inside of FaceComparison Function: " + faceMatch.Similarity);
                         return highestValue;
-                        //faceMatchSimilarities.Add(faceMatch.Similarity);
-                        //MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
-                        //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
+                    //faceMatchSimilarities.Add(faceMatch.Similarity);
+                    //MessageBox.Show("Similarity:" + faceMatch.Similarity + "%");
+                    //Console.WriteLine($"Similarity: {faceMatch.Similarity}%");
                     }
                 }
                 else
@@ -781,10 +712,10 @@ namespace FirstGUIAttempt
             );
             return highestValue;
         }
-                
-            //MessageBox.Show("Now inside the facial comparison function");
-            
-            
+
+        //MessageBox.Show("Now inside the facial comparison function");
+
+
 
         /// <summary>
         /// This function inserts values into the Keystroke Pattern table. This will always be executed on user login attempt.
@@ -805,7 +736,7 @@ namespace FirstGUIAttempt
                     using (SqlCommand command = new SqlCommand("Authentication.InsertKeystrokesIntoDynamicTable", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@TableName", Username);;
+                        command.Parameters.AddWithValue("@TableName", Username); ;
                         string csv = string.Join(",", finalKeystrokePattern);
                         command.Parameters.AddWithValue("@Keystrokes", csv);
                         command.Parameters.AddWithValue("@Expected", 0);
@@ -830,7 +761,7 @@ namespace FirstGUIAttempt
                 MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-            
-        }
     }
- 
+}
+
+

@@ -39,7 +39,7 @@
             // 
             // signIn
             // 
-            this.signIn.Location = new System.Drawing.Point(199, 297);
+            this.signIn.Location = new System.Drawing.Point(199, 261);
             this.signIn.Name = "signIn";
             this.signIn.Size = new System.Drawing.Size(166, 67);
             this.signIn.TabIndex = 0;
@@ -49,7 +49,7 @@
             // 
             // signUp
             // 
-            this.signUp.Location = new System.Drawing.Point(199, 143);
+            this.signUp.Location = new System.Drawing.Point(199, 85);
             this.signUp.Name = "signUp";
             this.signUp.Size = new System.Drawing.Size(166, 68);
             this.signUp.TabIndex = 1;
@@ -59,7 +59,7 @@
             // 
             // FirstGUIAttempt
             // 
-            this.ClientSize = new System.Drawing.Size(600, 500);
+            this.ClientSize = new System.Drawing.Size(578, 444);
             this.Controls.Add(this.signUp);
             this.Controls.Add(this.signIn);
             this.MaximumSize = this.Size;

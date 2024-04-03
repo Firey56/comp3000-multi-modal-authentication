@@ -1,6 +1,6 @@
 ﻿namespace FirstGUIAttempt
 {
-    partial class TestForm
+    partial class AdminForm
     {
         /// <summary>
         /// Required designer variable.

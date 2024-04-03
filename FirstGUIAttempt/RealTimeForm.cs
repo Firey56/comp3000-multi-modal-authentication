@@ -13,55 +13,60 @@ namespace FirstGUIAttempt
 {
     public partial class RealTimeForm : Form
     {
-        private MetroFramework.Controls.MetroLabel KeystrokeAnalysisLabel;
-        private MetroFramework.Controls.MetroLabel MetroKeystrokeAnalysisChangingLabel;
-        private MetroFramework.Controls.MetroLabel PasswordMatchLabel;
-        private MetroFramework.Controls.MetroLabel PasswordMatchTickBox;
-        private MetroFramework.Controls.MetroLabel FacialAnalysisTickBox;
-        private MetroFramework.Controls.MetroLabel FacialAnalysisText;
-        private MetroFramework.Controls.MetroLabel KeystrokeAnalysisTickBox;
-        private MetroFramework.Controls.MetroLabel UserInputsText;
-        private MetroFramework.Controls.MetroLabel UserInputsChangingLabel;
-        private MetroFramework.Controls.MetroLabel DecisionText;
-        private MetroFramework.Controls.MetroLabel DecisionChangingLabel;
-        private MetroFramework.Controls.MetroLabel FacialAnalysisChangingLabel;
-        private MetroFramework.Controls.MetroLabel DecisionTickBox;
+        private Label KeystrokeAnalysisLabel;
+        private Label MetroKeystrokeAnalysisChangingLabel;
+        private Label PasswordMatchLabel;
+        private Label PasswordMatchTickBox;
+        private Label FacialAnalysisTickBox;
+        private Label FacialAnalysisText;
+        private Label KeystrokeAnalysisTickBox;
+        private Label UserInputsText;
+        private Label UserInputsChangingLabel;
+        private Label DecisionText;
+        private Label DecisionChangingLabel;
+        private Label FacialAnalysisChangingLabel;
+        private Label DecisionTickBox;
 
 
 
         public RealTimeForm()
         {
             InitializeComponent();
+            ApplyFontSettings();
 
             int screenWidth = Screen.PrimaryScreen.Bounds.Width;
             int screenHeight = Screen.PrimaryScreen.Bounds.Height;
+            int xSize = 1080;
+            int ySize = 800;
+            this.ClientSize = new Size(xSize, ySize);
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
 
-            int centerX = ((screenWidth - this.Width) / 2) - 80;
-            int centerY = ((screenHeight - this.Height) / 2)-50;
+            int centerX = xSize/2;
+            int centerY = ySize/ 2;
 
             ////
             ///KeystrokeAnalysisLabel
             ///
-            KeystrokeAnalysisLabel = new MetroFramework.Controls.MetroLabel
+            KeystrokeAnalysisLabel = new Label
             {
                 Text = "Keystroke Analysis",
-                Location = new System.Drawing.Point(centerX, centerY + 150), // Set the location of the 
-                Theme = MetroFramework.MetroThemeStyle.Light,
-                Style = MetroFramework.MetroColorStyle.Blue,
-                Size = new System.Drawing.Size(150, 50),
-                Font = new System.Drawing.Font("Segoe UI", 12, System.Drawing.FontStyle.Bold) // Set custom font
+                Location = new System.Drawing.Point(centerX-50, centerY + 150), // Set the location of the 
+                AutoSize = true
             };
 
-            FacialAnalysisText = new MetroFramework.Controls.MetroLabel
+            FacialAnalysisText = new Label
             {
-                Location = new System.Drawing.Point(centerX, centerY),
-                Text = "Facial Analysis"
+                Location = new System.Drawing.Point(centerX-50, centerY-50),
+                Text = "Facial Analysis",
+                AutoSize = true
+
             };
 
-            PasswordMatchLabel = new MetroFramework.Controls.MetroLabel
+            PasswordMatchLabel = new Label
             {
-                Size = new System.Drawing.Size(120,100),
-                Location = new System.Drawing.Point(centerX, centerY - 150),
+                AutoSize = true,
+                Location = new System.Drawing.Point(centerX-50, centerY - 250),
                 Text = "Password Match"
             };
 
@@ -69,16 +74,19 @@ namespace FirstGUIAttempt
             ///UserInputsText
             ///
 
-            UserInputsText = new MetroFramework.Controls.MetroLabel
+            UserInputsText = new Label
             {
-                Location = new System.Drawing.Point(centerX - 200, centerY),
+                Location = new System.Drawing.Point(centerX-480, centerY-120),
+                AutoSize = true,
                 Text = "User Inputs"
             };
 
-            DecisionText = new MetroFramework.Controls.MetroLabel
+            DecisionText = new Label
             {
                 Text = "Decision",
-                Location = new System.Drawing.Point(centerX+300, centerY)
+                Location = new System.Drawing.Point(centerX+300, centerY-50),
+                AutoSize = true
+
             };
 
             ///////////////////////////////////////////////////////
@@ -94,36 +102,39 @@ namespace FirstGUIAttempt
             /////
             ///FacialAnalysisTickBox
             ///
-            FacialAnalysisTickBox = new MetroFramework.Controls.MetroLabel
+            FacialAnalysisTickBox = new Label
             {
-                Location = new System.Drawing.Point(centerX-30, centerY),
-                Size = new System.Drawing.Size(30, 30)
+                Location = new System.Drawing.Point(centerX-100, centerY-50),
+                AutoSize = true
+
             };
 
             /////
             ///PasswordMatchTickBox
             ///
 
-            PasswordMatchTickBox = new MetroFramework.Controls.MetroLabel
+            PasswordMatchTickBox = new Label
             {
-                Location = new System.Drawing.Point(centerX - 30, centerY - 150),
-                Size = new System.Drawing.Size(30, 30)
+                Location = new System.Drawing.Point(centerX - 100, centerY - 250),
+                AutoSize = true
+
             };
             
             /////
             ///KeystrokeAnalysisTickBox
             ///
 
-            KeystrokeAnalysisTickBox = new MetroFramework.Controls.MetroLabel
+            KeystrokeAnalysisTickBox = new Label
             {
-                Location = new System.Drawing.Point(centerX - 30, centerY + 150),
-                Size = new System.Drawing.Size(30, 30)
+                Location = new System.Drawing.Point(centerX - 100, centerY + 150),
+                AutoSize = true
+
             };
 
-            DecisionTickBox = new MetroFramework.Controls.MetroLabel
+            DecisionTickBox = new Label
             {
-                Location = new System.Drawing.Point(centerX+270, centerY),
-                Size = new System.Drawing.Size(30, 30)
+                Location = new System.Drawing.Point(centerX+250, centerY-50),
+                AutoSize = true
             };
 
 
@@ -144,45 +155,32 @@ namespace FirstGUIAttempt
             ///UserInputsChangingLabel
             ///
 
-            UserInputsChangingLabel = new MetroFramework.Controls.MetroLabel
+            UserInputsChangingLabel = new Label
             {
-                Location = new System.Drawing.Point(centerX - 200, centerY + 50),
-                Size = new System.Drawing.Size(300,300),
-                Font = new System.Drawing.Font("Comic Sans MS", 8, System.Drawing.FontStyle.Bold) // Set custom font
+                Location = new System.Drawing.Point(centerX-480 , centerY - 80),
+                AutoSize = true
 
             };
 
-            DecisionChangingLabel = new MetroFramework.Controls.MetroLabel
+            DecisionChangingLabel = new Label
             {
-                Location = new System.Drawing.Point(centerX+300, centerY+30),
-                Size = new System.Drawing.Size(100,150)
+                Location = new System.Drawing.Point(centerX+300, centerY-20),
+                AutoSize = true
             };
 
-            DecisionChangingLabel = new MetroFramework.Controls.MetroLabel
+            MetroKeystrokeAnalysisChangingLabel = new Label
             {
-                Location = new System.Drawing.Point(centerX + 300, centerY + 30),
-                Size = new System.Drawing.Size(100, 150)
+                Location = new System.Drawing.Point(centerX-50, centerY + 180),
+                AutoSize = true
+
             };
-            MetroKeystrokeAnalysisChangingLabel = new MetroFramework.Controls.MetroLabel
+            FacialAnalysisChangingLabel = new Label
             {
-                Location = new System.Drawing.Point(centerX, centerY + 180),
-                Size = new System.Drawing.Size(100, 150)
-            };
-            FacialAnalysisChangingLabel = new MetroFramework.Controls.MetroLabel
-            {
-                Location = new System.Drawing.Point(centerX, centerY + 30),
-                Size = new System.Drawing.Size(100, 150)
+                Location = new System.Drawing.Point(centerX-50, centerY -20),
+                AutoSize = true
+
             };
 
-
-
-            this.ClientSize = new System.Drawing.Size(1080, 720);
-            this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = Color.White;
-            this.ClientSize = new System.Drawing.Size(1238, 698);
 
             this.Controls.Add(FacialAnalysisTickBox);
             this.Controls.Add(KeystrokeAnalysisTickBox);
@@ -197,6 +195,25 @@ namespace FirstGUIAttempt
             this.Controls.Add(FacialAnalysisText);
             this.Controls.Add(FacialAnalysisChangingLabel);
             this.Controls.Add(DecisionTickBox);
+        }
+
+        private void ApplyFontSettings()
+        {
+            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+            this.Font = font;
+            ApplyFontToControls(this.Controls, font);
+        }
+
+        private void ApplyFontToControls(Control.ControlCollection controls, Font font)
+        {
+            foreach (Control control in controls)
+            {
+                control.Font = font;
+                if (control.Controls.Count > 0)
+                {
+                    ApplyFontToControls(control.Controls, font);
+                }
+            }
         }
         public void UpdateLabelsForLogin(string labelUpdated, string data)
         {

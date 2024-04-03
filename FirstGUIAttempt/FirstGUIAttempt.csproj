@@ -116,11 +116,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdminPage.cs">
+    <Compile Include="AccessibilitySettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdminPage.Designer.cs">
-      <DependentUpon>AdminPage.cs</DependentUpon>
+    <Compile Include="AccessibilitySettings.Designer.cs">
+      <DependentUpon>AccessibilitySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Common.cs" />
     <Compile Include="FirstGUIAttempt.cs">
@@ -134,6 +134,12 @@
     </Compile>
     <Compile Include="IntermediatePage.Designer.cs">
       <DependentUpon>IntermediatePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NewSignInForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewSignInForm.Designer.cs">
+      <DependentUpon>NewSignInForm.cs</DependentUpon>
     </Compile>
     <Compile Include="RealTimeForm.cs">
       <SubType>Form</SubType>
@@ -155,11 +161,17 @@
     <Compile Include="SignUpForm.Designer.cs">
       <DependentUpon>SignUpForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TestForm.cs">
+    <Compile Include="AdminForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TestForm.Designer.cs">
-      <DependentUpon>TestForm.cs</DependentUpon>
+    <Compile Include="AdminForm.Designer.cs">
+      <DependentUpon>AdminForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NewSignUpForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewSignUpForm.Designer.cs">
+      <DependentUpon>NewSignUpForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UserForm.cs">
       <SubType>Form</SubType>
@@ -167,8 +179,8 @@
     <Compile Include="UserForm.Designer.cs">
       <DependentUpon>UserForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="AdminPage.resx">
-      <DependentUpon>AdminPage.cs</DependentUpon>
+    <EmbeddedResource Include="AccessibilitySettings.resx">
+      <DependentUpon>AccessibilitySettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FirstGUIAttempt.resx">
       <DependentUpon>FirstGUIAttempt.cs</DependentUpon>
@@ -194,12 +206,15 @@
     <EmbeddedResource Include="SignUpForm.resx">
       <DependentUpon>SignUpForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TestForm.resx">
-      <DependentUpon>TestForm.cs</DependentUpon>
+    <EmbeddedResource Include="AdminForm.resx">
+      <DependentUpon>AdminForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserForm.resx">
       <DependentUpon>UserForm.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="OpenDyslexic3-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AForge.Video;
+using AForge.Video.DirectShow;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,19 +9,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using System.Data.SqlClient;
-using static FirstGUIAttempt.Common;
 using System.Diagnostics;
-using AForge.Video.DirectShow;
-using AForge.Video;
-using System.Security.Cryptography;
+using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace FirstGUIAttempt
 {
-    public partial class SignUpForm : Form
+    public partial class NewSignUpForm : Form
     {
+        private Label UsernameLabel = new Label();
+        private TextBox UsernameTextBox = new TextBox();
+        private Label PasswordLabel = new Label();
+        private TextBox PasswordTextBox = new TextBox();
+        private Label PhotoLabel = new Label();
+        private PictureBox PhotoBox = new PictureBox();
+        private Button TakePhotoButton = new Button();
+        private Button SubmitButton = new Button();
+        private VideoCaptureDevice videoSource;
+        private LinkLabel AccessibilitySettingsText = new LinkLabel();
+
         string base64Image = null;
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
@@ -27,43 +37,76 @@ namespace FirstGUIAttempt
         readonly static List<long> keystrokePattern = new List<long>();
         readonly static Stopwatch keyboardTimer = new Stopwatch();
         readonly static List<string> finalKeystrokePattern = new List<string>();
-        private VideoCaptureDevice videoSource;
-        public SignUpForm()
+
+
+        public NewSignUpForm()
         {
             Application.EnableVisualStyles();
             InitializeComponent();
             ApplyFontSettings();
             InitializeWebcam();
-            signUpFormPasswordTextBox.KeyDown += password_KeyPress;
-            this.ClientSize = new System.Drawing.Size(600, 500);
+            TakePhotoButton.Click += takePhoto;
+            SubmitButton.Click += submit;
+            PasswordTextBox.KeyDown += password_KeyPress;
+
+
+            this.ClientSize = new Size(600, 600);
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
 
-        }
+            /////////////////////////
+            ///Username Label work
+            /////////////////////////
+            ///
+            UsernameLabel.Location = new Point(125,30);
+            UsernameLabel.AutoSize = true;
+            UsernameLabel.Text = "Username";
+            //UsernameLabel.Font = new Font("Arial", 8);
+            this.Controls.Add(UsernameLabel);
 
-        private void ApplyFontSettings()
-        {
-            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
-            this.Font = font;
-            ApplyFontToControls(this.Controls, font);
-        }
 
-        private void ApplyFontToControls(Control.ControlCollection controls, Font font)
-        {
-            foreach (Control control in controls)
-            {
-                control.Font = font;
-                if (control.Controls.Count > 0)
-                {
-                    ApplyFontToControls(control.Controls, font);
-                }
-            }
+
+            UsernameTextBox.Location = new Point(130, 60);
+            UsernameTextBox.Size = new Size(300, 40);
+            UsernameTextBox.BringToFront();
+            this.Controls.Add(UsernameTextBox);
+
+            PasswordLabel.Location = new Point(125, 170);
+            PasswordLabel.AutoSize = true;
+            PasswordLabel.Text = "Password";
+            //UsernameLabel.Font = new Font("Arial", 8);
+            this.Controls.Add(PasswordLabel);
+
+            PasswordTextBox.Location = new Point(130, 200);
+            PasswordTextBox.Size = new Size(300, 40);
+            PasswordTextBox.BringToFront();
+            PasswordTextBox.PasswordChar = '*';
+            this.Controls.Add(PasswordTextBox);
+
+            PhotoLabel.Location = new Point(130, 250);
+            PhotoLabel.AutoSize = true;
+            PhotoLabel.Text = "Photo";
+            this.Controls.Add(PhotoLabel);
+
+            TakePhotoButton.Location = new Point(200, 250);
+            TakePhotoButton.AutoSize = true;
+            TakePhotoButton.Text = "Take Photo";
+            this.Controls.Add(TakePhotoButton);
+
+            PhotoBox.Location = new Point(180, 300);
+            PhotoBox.Size = new Size(200, 130);
+            this.Controls.Add(PhotoBox);
+
+            SubmitButton.Location = new Point(240, 520);
+            SubmitButton.AutoSize = true;
+            SubmitButton.Text = "Submit";
+            this.Controls.Add(SubmitButton);
         }
 
         private void submit(object sender, EventArgs e)
         {
-            string usernameInput = signUpFormUsernameTextBox.Text;
-            string hashedPassword = HashPassword(signUpFormPasswordTextBox.Text);
+            string usernameInput = UsernameTextBox.Text;
+            string hashedPassword = HashPassword(PasswordTextBox.Text);
             //MessageBox.Show(usernameInput);
             //MessageBox.Show(passwordInput);
             finalKeystrokePattern.Add("Keystroke");//Initial keystroke
@@ -93,13 +136,15 @@ namespace FirstGUIAttempt
                 else
                 {
                     MessageBox.Show("Input has not passed data sanitisation. There is an attempt at an exploit.");
-                }            }
+                }
+            }
             else
             {
                 MessageBox.Show("Please fill in all fields!");
             }
 
         }
+
         public bool InputSanitisation(string checkUsername)
         {
             ///////////////////////////////////////////////////////////////////////////////
@@ -139,7 +184,7 @@ namespace FirstGUIAttempt
                     bool success = false;
                     // Insert data into the database
                     //using (SqlCommand command = new SqlCommand("INSERT INTO users (Username, Password, image) VALUES (@Username, @Password, @image)", connection))
-                    using(SqlCommand command = new SqlCommand("Authentication.UserSignUp", connection))
+                    using (SqlCommand command = new SqlCommand("Authentication.UserSignUp", connection))
                     {
                         Console.WriteLine("We are inside the command.");
                         command.CommandType = CommandType.StoredProcedure;
@@ -177,8 +222,6 @@ namespace FirstGUIAttempt
                 MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        
-
 
         private static void password_KeyPress(object sender, KeyEventArgs e)
         {
@@ -214,7 +257,7 @@ namespace FirstGUIAttempt
             using (SHA256 sha256 = SHA256.Create())
             {
                 // Convert the input string to bytes
-                passwordAsBytes= Encoding.UTF8.GetBytes(password);
+                passwordAsBytes = Encoding.UTF8.GetBytes(password);
 
                 // Calculate the SHA-256 hash
                 calculatedHash = sha256.ComputeHash(passwordAsBytes);
@@ -227,7 +270,7 @@ namespace FirstGUIAttempt
             }
         }
 
- 
+
 
         /*
         /// <summary>
@@ -250,10 +293,10 @@ namespace FirstGUIAttempt
 
         private void takePhoto(object sender, EventArgs e)
         {
-            if (signUpPictureBox.Image != null)
+            if (PhotoBox.Image != null)
             {
                 // Capture the current image from the PictureBox
-                Bitmap capturedImage = (Bitmap)signUpPictureBox.Image.Clone();
+                Bitmap capturedImage = (Bitmap)PhotoBox.Image.Clone();
                 videoSource.SignalToStop();
                 videoSource.WaitForStop();
 
@@ -277,73 +320,6 @@ namespace FirstGUIAttempt
             }
         }
 
-        private void InitializeWebcam()
-        {
-            // Get the list of available video devices (webcams)
-            FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-
-            if (videoDevices.Count > 0)
-            {
-                // Select the first video device
-                videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
-                videoSource.NewFrame += VideoSource_NewFrame;
-
-                // Start the video source
-                videoSource.Start();
-            }
-            else
-            {
-                MessageBox.Show("No video devices found.");
-            }
-        }
-        private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
-        {
-            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
-            Size newSize = CalculateSizeToFit(originalFrame.Size, signUpPictureBox.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
-            Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
-            signUpPictureBox.Image = resizedFrame;
-
-            // Dispose of old frame
-            originalFrame.Dispose();
-        }
-
-        private Size CalculateSizeToFit(Size originalSize, Size containerSize)
-        {
-            int width, height;
-
-            // Calculate the width and height to fit the original aspect ratio within the container
-            if (originalSize.Width > originalSize.Height)
-            {
-                width = containerSize.Width;
-                height = (int)(containerSize.Width * (float)originalSize.Height / originalSize.Width);
-            }
-            else
-            {
-                height = containerSize.Height;
-                width = (int)(containerSize.Height * (float)originalSize.Width / originalSize.Height);
-            }
-
-            return new Size(width, height);
-        }
-
-        private Bitmap ResizeImage(Bitmap originalImage, Size newSize)
-        {
-            // Create a new Bitmap with the specified size
-            Bitmap resizedImage = new Bitmap(newSize.Width, newSize.Height);
-
-            using (Graphics g = Graphics.FromImage(resizedImage))
-            {
-                // Maintain the aspect ratio of the original image and apply high-quality interpolation
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(originalImage, 0, 0, newSize.Width, newSize.Height);
-            }
-
-            return resizedImage;
-        }
-        /// <summary>
-        /// Function for stopping the video source when the form is closed.
-        /// </summary>
-        /// <param name="e"></param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             // Stop the video source when closing the form
@@ -393,6 +369,87 @@ namespace FirstGUIAttempt
                 MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-    }
+    private void ApplyFontSettings()
+        {
+            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+            this.Font = font;
+            ApplyFontToControls(this.Controls, font);
+        }
 
+        private void ApplyFontToControls(Control.ControlCollection controls, Font font)
+        {
+            foreach (Control control in controls)
+            {
+                control.Font = font;
+                if (control.Controls.Count > 0)
+                {
+                    ApplyFontToControls(control.Controls, font);
+                }
+            }
+        }
+
+        private void InitializeWebcam()
+        {
+            // Get the list of available video devices (webcams)
+            FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+
+            if (videoDevices.Count > 0)
+            {
+                // Select the first video device
+                videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
+                videoSource.NewFrame += VideoSource_NewFrame;
+
+                // Start the video source
+                videoSource.Start();
+            }
+            else
+            {
+                MessageBox.Show("No video devices found.");
+            }
+        }
+        private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
+            Size newSize = CalculateSizeToFit(originalFrame.Size, PhotoBox.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
+            Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
+            PhotoBox.Image = resizedFrame;
+
+            // Dispose of old frame
+            originalFrame.Dispose();
+        }
+
+        private Size CalculateSizeToFit(Size originalSize, Size containerSize)
+        {
+            int width, height;
+
+            // Calculate the width and height to fit the original aspect ratio within the container
+            if (originalSize.Width > originalSize.Height)
+            {
+                width = containerSize.Width;
+                height = (int)(containerSize.Width * (float)originalSize.Height / originalSize.Width);
+            }
+            else
+            {
+                height = containerSize.Height;
+                width = (int)(containerSize.Height * (float)originalSize.Width / originalSize.Height);
+            }
+
+            return new Size(width, height);
+        }
+
+        private Bitmap ResizeImage(Bitmap originalImage, Size newSize)
+        {
+            // Create a new Bitmap with the specified size
+            Bitmap resizedImage = new Bitmap(newSize.Width, newSize.Height);
+
+            using (Graphics g = Graphics.FromImage(resizedImage))
+            {
+                // Maintain the aspect ratio of the original image and apply high-quality interpolation
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(originalImage, 0, 0, newSize.Width, newSize.Height);
+            }
+
+            return resizedImage;
+        }
+    }
 }

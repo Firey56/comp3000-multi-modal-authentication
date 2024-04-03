@@ -12,39 +12,54 @@ using System.Data.SqlClient;
 using System.Windows.Forms.VisualStyles;
 namespace FirstGUIAttempt
 {
-    public partial class TestForm : Form
+    public partial class AdminForm : Form
     {
-        private Button RefreshButton = new Button();
-        private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
-        public TestForm()
+        private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+
+        //private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
+        public AdminForm()
         {
             InitializeComponent();
+            ApplyFontSettings();
+            this.ClientSize = new Size(900, 500);
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
             // Set up the ListBox
             CurrentUsersListBox.DrawMode = DrawMode.OwnerDrawFixed;
             CurrentUsersListBox.DrawItem += CurrentUsersListBox_DrawItem;
             DeletedUsersListBox.DrawMode = DrawMode.OwnerDrawFixed;
             DeletedUsersListBox.DrawItem += DeletedUsersListBox_DrawItem;
-            RefreshButton.Location = new Point(0, 0);
-            RefreshButton.Size = new Size(100, 50);
-            RefreshButton.Text = "Refresh";
-            this.Controls.Add(RefreshButton);
             // Populate the ListBox with items (including base64 encoded images)
             CurrentUsersListBox.ItemHeight = 100;
             DeletedUsersListBox.ItemHeight = 100;
+            CurrentUsersListBox.Size = new Size(350, 500);
+            DeletedUsersListBox.Size = new Size(350, 500);
+            CurrentUsersListBox.Location = new Point(50, 50);
+            DeletedUsersListBox.Location = new Point(450, 50);
             CurrentUsersListBox.DoubleClick += CurrentUsersListBox_DoubleClick;
             DeletedUsersListBox.DoubleClick += DeletedUsersListBox_DoubleClick;
-            RefreshButton.Click += RefreshListBox;
             LoadDataIntoListBox("SELECT * FROM Authentication.AllUsersView", "CurrentUsers");
             LoadDataIntoListBox("SELECT * FROM Authentication.AllDeletedUsersView", "DeletedUsers");
             
         }
 
-        private void RefreshListBox(object sender, EventArgs e)
+        private void ApplyFontSettings()
         {
-            CurrentUsersListBox.Items.Clear();
-            DeletedUsersListBox.Items.Clear();
-            LoadDataIntoListBox("SELECT * FROM Authentication.AllUsersView", "CurrentUsers");
-            LoadDataIntoListBox("SELECT * FROM Authentication.AllDeletedUsersView", "DeletedUsers");
+            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+            this.Font = font;
+            ApplyFontToControls(this.Controls, font);
+        }
+
+        private void ApplyFontToControls(Control.ControlCollection controls, Font font)
+        {
+            foreach (Control control in controls)
+            {
+                control.Font = font;
+                if (control.Controls.Count > 0)
+                {
+                    ApplyFontToControls(control.Controls, font);
+                }
+            }
         }
 
         private void LoadDataIntoListBox(string query, string listBox)
@@ -282,14 +297,15 @@ namespace FirstGUIAttempt
             {
                 // Extract data from the selected item
                 string[] itemParts = CurrentUsersListBox.SelectedItem.ToString().Split(',');
-                string UserID = itemParts[0];
+                string TargetUserID = itemParts[0];
                 string Username = itemParts[1];
                 string base64Image = itemParts[2];
                 string UserType = itemParts[3];
                 // Create a new instance of your form
                 UserForm UserForm = new UserForm("Current");
                 // Pass the data to the new form
-                UserForm.UserID = UserID;
+                UserForm.InteractingUserType = 1;
+                UserForm.UserID = itemParts[0];
                 UserForm.Username = Username;
                 UserForm.base64Image = base64Image;
                 UserForm.UserType = UserType;
@@ -312,6 +328,7 @@ namespace FirstGUIAttempt
                 // Create a new instance of your form
                 UserForm UserForm = new UserForm("Deleted");
                 // Pass the data to the new form
+                UserForm.InteractingUserType = 1;
                 UserForm.UserID = UserID;
                 UserForm.Username = Username;
                 UserForm.base64Image = base64Image;
