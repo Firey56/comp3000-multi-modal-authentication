@@ -45,7 +45,7 @@ namespace FirstGUIAttempt
         static Stopwatch photoStopwatch = new Stopwatch();
         List<string> finalKeystrokePattern = new List<string>();
         RealTimeForm goToRealTime = new RealTimeForm();
-
+        bool WebcamAvailable = false;
         public NewSignInForm()
         {
             InitializeComponent();
@@ -286,6 +286,7 @@ namespace FirstGUIAttempt
 
             if (videoDevices.Count > 0)
             {
+                WebcamAvailable = true;
                 // Select the first video device
                 videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
                 videoSource.NewFrame += VideoSource_NewFrame;
