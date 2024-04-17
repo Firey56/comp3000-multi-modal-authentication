@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Text;
+using System.IO;
+using MahApps.Metro.Behaviors;
+
 
 
 namespace FirstGUIAttempt
@@ -16,15 +19,15 @@ namespace FirstGUIAttempt
     {
         public static string Font { get; set; } = SystemFonts.DefaultFont.FontFamily.Name;
         public static float FontSize { get; set; } = SystemFonts.DefaultFont.SizeInPoints;
-        private PrivateFontCollection customFonts = new PrivateFontCollection();//TODO Need to add the custom font in here.
         private string tempFont;
         private float tempFontSize;
         private string currentFont;
         private float currentFontSize;
         private Label FontSizeStart = new Label();
         private Label FontSizeEnd = new Label();
-
+        private Label Testlabel = new Label();
         private Label ExampleText = new Label();
+       
         public AccessibilitySettings()
         {
             InitializeComponent();
@@ -53,6 +56,8 @@ namespace FirstGUIAttempt
 
         }
 
+        
+
         private void SaveAccessibility_Click(object sender, EventArgs e)
         {
             Font = tempFont;
@@ -64,8 +69,7 @@ namespace FirstGUIAttempt
 
         private void AccessibilitySettings_Load(object sender, EventArgs e)
         {
-            // Add your initialization code here
-            // This code will run when the form is loaded
+
             
             currentFont = Font;
             currentFontSize = FontSize;
@@ -73,6 +77,8 @@ namespace FirstGUIAttempt
             tempFontSize = FontSize;
             Console.WriteLine("Current Font: " + currentFont);
             Console.WriteLine("Current Font Size: " + currentFontSize);
+
+
 
             if (currentFontSize == 8.25)
             {
@@ -90,13 +96,21 @@ namespace FirstGUIAttempt
                 case "Comic Sans MS":
                     FontTrackBar.Value = 2;
                     break;
-                case "Arial":
+                case "OpenDyslexic 3":
                     FontTrackBar.Value = 3;
                     break;
                 case "Impact":
                     FontTrackBar.Value = 4;
                     break;
                     
+            }
+            if(currentFont != "OpenDyslexic 3")
+            {
+                ExampleText.Font = new Font(currentFont, currentFontSize);
+            }
+            else
+            {
+                ExampleText.Font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], currentFontSize);
             }
 
 
@@ -147,9 +161,16 @@ namespace FirstGUIAttempt
                     break;
             };
 
-            Console.WriteLine("Why is the font updating? " + currentFont);
-            // Do something with the current value, such as updating a label
-            ExampleText.Font= new Font(tempFont, tempFontSize);
+            //Console.WriteLine("Why is the font updating? " + currentFont);
+            if(tempFont != "OpenDyslexic 3")
+            {
+                ExampleText.Font = new Font(tempFont, tempFontSize);
+            }
+            else
+            {
+                ExampleText.Font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], tempFontSize);
+            }
+   
         }
 
         private void FontTrackBar_Scroll(object sender, EventArgs e)
@@ -168,7 +189,7 @@ namespace FirstGUIAttempt
                     break;
                 case 3:
                     //Font size is 10
-                    tempFont = "Arial";
+                    tempFont = "OpenDyslexic 3";
                     break;
                 case 4:
                     //Font size is 11
@@ -178,8 +199,15 @@ namespace FirstGUIAttempt
             };
 
 
-            // Do something with the current value, such as updating a label
-            ExampleText.Font = new Font(tempFont, tempFontSize);
+            
+            if(tempFont == "OpenDyslexic 3")
+            {
+                ExampleText.Font= new Font(FirstGUIAttempt.OpenDyslexic.Families[0], tempFontSize);
+            }
+            else
+            {
+                ExampleText.Font = new Font(tempFont, tempFontSize);
+            }
         }
     }
 }

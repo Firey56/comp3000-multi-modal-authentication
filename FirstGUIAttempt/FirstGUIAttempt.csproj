@@ -213,7 +213,7 @@
       <DependentUpon>UserForm.cs</DependentUpon>
     </EmbeddedResource>
     <Content Include="OpenDyslexic3-Regular.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

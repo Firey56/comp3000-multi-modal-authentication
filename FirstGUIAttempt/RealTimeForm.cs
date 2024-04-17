@@ -199,9 +199,18 @@ namespace FirstGUIAttempt
 
         private void ApplyFontSettings()
         {
-            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
-            this.Font = font;
-            ApplyFontToControls(this.Controls, font);
+            if (AccessibilitySettings.Font == "OpenDyslexic 3")
+            {
+                Font font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
+            else
+            {
+                Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
         }
 
         private void ApplyFontToControls(Control.ControlCollection controls, Font font)

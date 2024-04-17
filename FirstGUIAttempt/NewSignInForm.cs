@@ -21,6 +21,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.Drawing.Text;
 
 namespace FirstGUIAttempt
 {
@@ -62,7 +63,7 @@ namespace FirstGUIAttempt
             this.MinimumSize = this.Size;
 
 
-            UsernameLabel.Location = new System.Drawing.Point(125, 80);
+            UsernameLabel.Location = new System.Drawing.Point(125, 70);
             UsernameLabel.AutoSize = true;
             UsernameLabel.Text = "Username";
             this.Controls.Add(UsernameLabel);
@@ -71,7 +72,7 @@ namespace FirstGUIAttempt
             this.Controls.Add(UsernameTextBox);
 
 
-            PasswordLabel.Location = new System.Drawing.Point(125, 220);
+            PasswordLabel.Location = new System.Drawing.Point(125, 210);
             PasswordLabel.AutoSize = true;
             PasswordLabel.Text = "Password";
             this.Controls.Add(PasswordLabel);
@@ -98,9 +99,22 @@ namespace FirstGUIAttempt
 
         private void ApplyFontSettings()
         {
-            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
-            this.Font = font;
-            ApplyFontToControls(this.Controls, font);
+            if(AccessibilitySettings.Font == "OpenDyslexic 3")
+            {
+                Font font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
+            else
+            {
+                Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
+            
+                
+
+      
         }
 
         private void ApplyFontToControls(Control.ControlCollection controls, Font font)
@@ -150,7 +164,7 @@ namespace FirstGUIAttempt
 
                 }
             }
-            if (usernameInput != null && hashedPassword != null && comparisonImageBase64 != null)
+            if (usernameInput != null && hashedPassword != null)
             {
                 // MessageBox.Show("We are inside the SubmitButton function");
                 foreach (string value in finalKeystrokePattern)
@@ -190,10 +204,10 @@ namespace FirstGUIAttempt
             string commandInjectionPattern = @"(&|\||;|`|\\|\$\(|\)|\{|\})";
             string ldapInjectionPattern = @"(\*|\(|\)|\x00)";
 
-            // Combine all patterns into a single regex pattern
+            // Combine all into one pattern
             string combinedPattern = string.Join("|", sqlInjectionPattern, xssPattern, pathTraversalPattern, htmlInjectionPattern, commandInjectionPattern, ldapInjectionPattern);
 
-            // Create a Regex object with the combined pattern
+            // Create a Regex object with the pattern
             Regex regex = new Regex(combinedPattern, RegexOptions.IgnoreCase);
 
             // Check if the user input matches any of the patterns
@@ -208,19 +222,15 @@ namespace FirstGUIAttempt
         }
         async Task<float> RunMachineLearningProcessAsync()
         {
-            // Your code to run the machine learning process asynchronously
-            // For example:
             float estimate = 0;
             await Task.Run(() =>
             {
-                // Code to execute the machine learning process
-                // This could involve calling a Python script, invoking an external process, etc.
-                // Ensure to properly handle any exceptions or errors
+  
                 string pythonInterpreter = "python";
                 string pythonScript = "../../../MachineLearningModel.py";
                 string csv = string.Join(",", finalKeystrokePattern);
 
-                // Prepare process start information
+                // Prepare python process
                 ProcessStartInfo start = new ProcessStartInfo();
                 start.FileName = pythonInterpreter;
                 start.Arguments = string.Format("\"{0}\" \"{1}\" \"{2}\"", pythonScript, UsernameTextBox.Text, csv);
@@ -269,10 +279,10 @@ namespace FirstGUIAttempt
                 // Convert the input string to bytes
                 passwordAsBytes = Encoding.UTF8.GetBytes(password);
 
-                // Calculate the SHA-256 hash
+                //Compute Hash
                 calculatedHash = sha256.ComputeHash(passwordAsBytes);
 
-                // Convert the hash to a hexadecimal string
+                // Convert the hash to string
                 string hashedInput = BitConverter.ToString(calculatedHash).Replace("-", "").ToLower();
                 //Console.WriteLine(hashedInput);
                 //*MessageBox.Show("Hashed output should be out");
@@ -291,12 +301,13 @@ namespace FirstGUIAttempt
                 videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
                 videoSource.NewFrame += VideoSource_NewFrame;
 
-                // Start the video source
                 videoSource.Start();
+                WebcamAvailable = true;
             }
             else
             {
-                MessageBox.Show("No video devices found.");
+                //MessageBox.Show("No video devices found.");
+                WebcamAvailable = false;
             }
         }
 
@@ -308,9 +319,9 @@ namespace FirstGUIAttempt
         /// <param name="eventArgs"></param>
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
-            Size newSize = CalculateSizeToFit(originalFrame.Size, PhotoBox.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
-            Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
+            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a duplicate.
+            Size newSize = CalculateSizeToFit(originalFrame.Size, PhotoBox.ClientSize); //Creates a size of what's given vs expected
+            Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Resize the image
             PhotoBox.Image = resizedFrame;
 
             // Dispose of old frame
@@ -328,7 +339,6 @@ namespace FirstGUIAttempt
         {
             int width, height;
 
-            // Calculate the width and height to fit the original aspect ratio within the container
             if (originalSize.Width > originalSize.Height)
             {
                 width = containerSize.Width;
@@ -350,12 +360,10 @@ namespace FirstGUIAttempt
         /// <returns></returns>
         private Bitmap ResizeImage(Bitmap originalImage, Size newSize)
         {
-            // Create a new Bitmap with the specified size
             Bitmap resizedImage = new Bitmap(newSize.Width, newSize.Height);
 
             using (Graphics g = Graphics.FromImage(resizedImage))
             {
-                // Maintain the aspect ratio of the original image and apply high-quality interpolation
                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                 g.DrawImage(originalImage, 0, 0, newSize.Width, newSize.Height);
             }
@@ -451,7 +459,7 @@ namespace FirstGUIAttempt
                     UserSubmit();
                 }
                 if (e.KeyCode == Keys.Back)
-                {//TODO make sure this is changed so that it doesn't crash if they press backspace when empty
+                {//TODN make sure this is changed so that it doesn't crash if they press backspace when empty
                     keystrokePattern.Clear();
                     PasswordTextBox.Text = "";
                     keyboardTimer.Stop();
@@ -470,13 +478,11 @@ namespace FirstGUIAttempt
 
                 //keyboardTimer.Reset();
             }
-            if (keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 100)
+            if ((keystrokePattern.Count == 1 || photoStopwatch.ElapsedMilliseconds >= 100) && WebcamAvailable == true)
             {
                 TakePhoto();
             }
 
-
-            // Display or process the keystroke pattern as needed
             //*Console.WriteLine($"Recorded: Keystroke");
         }
 
@@ -533,116 +539,129 @@ namespace FirstGUIAttempt
         }
         private async void UserSignIn(string username, string password)
         {
-            //MessageBox.Show("We are inside the UserSignIn Function");
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                connection.Open();
-                int UserID;
-                //MessageBox.Show("Connection Opened");
-                //TODO MAKE THIS A STORED PROCEDURE
-                string sqlQuery = "SELECT * FROM Authentication.Users WHERE Username = @Username";
-                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+
+                //MessageBox.Show("We are inside the UserSignIn Function");
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    //Add parameters to the command
-                    command.Parameters.AddWithValue("@Username", username);
-                    //MessageBox.Show("Parameters set.");
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    connection.Open();
+                    int UserID;
+                    //MessageBox.Show("Connection Opened");
+                    //TODO MAKE THIS A STORED PROCEDURE
+                    string sqlQuery = "SELECT * FROM Authentication.Users WHERE Username = @Username";
+                    using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                     {
-                        //MessageBox.Show("DataReader executed");
-                        // Check if there are rows returned from the query
-                        if (reader.HasRows)
+                        //Add parameters to the command
+                        command.Parameters.AddWithValue("@Username", username);
+                        //MessageBox.Show("Parameters set.");
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            //MessageBox.Show("Has Rows!");
-                            // Iterate through the result set using the SqlDataReader
-                            while (reader.Read())
+                            //MessageBox.Show("DataReader executed");
+                            // Check if there are rows returned from the query
+                            if (reader.HasRows)
                             {
-                                //MessageBox.Show("Now assigning values");
-                                //The reader object stores the database values as their headers
-
-                                //This section can be probably changed to be a stored procedure to be more secure.
-                                string databaseUsername = reader["Username"].ToString();
-                                string databasePassword = reader["Password"].ToString();
-                                string databaseImage = reader["Image"].ToString();
-                                int databaseUserType = Int32.Parse(reader["UserType"].ToString());
-                                UserID = Int32.Parse(reader["UserID"].ToString());
-                                if (databasePassword == password)
+                                //MessageBox.Show("Has Rows!");
+                                while (reader.Read())
                                 {
-                                    goToRealTime.UpdateLabelsForLogin("PasswordMatchTickBox", "true");
-                                    Task<float> calculateAverageTask = CalculateFacialScoreAverage(databaseImage);
-                                    float averageFacialAnalysisScore = await calculateAverageTask;
-                                    goToRealTime.UpdateLabelsForLogin("FacialAnalysisTickBox", averageFacialAnalysisScore.ToString());
-                                    float keystrokeAnalysisConfidence = 1;
-                                    //MessageBox.Show("Passwords matched");
+                                    //MessageBox.Show("Now assigning values");
 
-                                    //!We want all forms of authentication to occur, so we can call all three functions here and then decide later.
-                                    //TODO FaceMatch Function
-                                    //TODO Keystroke Function
-                                    //TODO Face Liveness Function
-                                    //long confidenceScore = KeystrokeAnalysis(UserID)
-                                    if (pasteFlag == true)
+                                    string databaseUsername = reader["Username"].ToString();
+                                    string databasePassword = reader["Password"].ToString();
+                                    string databaseImage = reader["Image"].ToString();
+                                    int databaseUserType = Int32.Parse(reader["UserType"].ToString());
+                                    UserID = Int32.Parse(reader["UserID"].ToString());
+                                    if (databasePassword == password)
                                     {
-                                        //TODO This needs to make sure the confidence score is lowered as user pasted in password
-                                        keystrokeAnalysisConfidence = 0;
-                                        goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
-
-
-                                    }
-                                    if (keystrokeAnalysisConfidence == 1)
-                                    {
-                                        //Task<float> machineLearningTask = RunMachineLearningProcessAsync();
-                                        //keystrokeAnalysisConfidence = await machineLearningTask
-                                        goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
-                                        string userInputs = "Password Correct \n" + "Photos Supplied: " + photoCount.ToString() + "\nKeystroke Analysis: Complete";
-                                        goToRealTime.UpdateLabelsForLogin("UserInputs", userInputs);
-                                        //keystrokeAnalysisConfidence = 90;
-                                    }
-
-                                    /////////////////////////////////////////////////////////////////////////////
-                                    ///At this point we have all of our similarity scores, so we are able to calculate our confidence score
-                                    /////////////////////////////////////////////////////////////////////////////
-                                    ///
-                                    float finalConfidence = ((float)(averageFacialAnalysisScore * 0.5) + (float)(keystrokeAnalysisConfidence * 100 * 0.5));
-                                    Console.WriteLine("Final Confidence: " + finalConfidence);
-                                    goToRealTime.UpdateLabelsForLogin("Decision", finalConfidence.ToString());
-                                    //MessageBox.Show(highestSimilarity.ToString());
-                                    if (finalConfidence >= 0.8)
-                                    {
-                                        //TODO Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
-                                        if (databaseUserType == 1)
+                                        goToRealTime.UpdateLabelsForLogin("PasswordMatchTickBox", "true");
+                                        float averageFacialAnalysisScore;
+                                        if (WebcamAvailable == true)
                                         {
-                                            AdminForm AdminPage = new AdminForm();
-                                            AdminPage.Show();
+                                            Task<float> calculateAverageTask = CalculateFacialScoreAverage(databaseImage);
+                                            averageFacialAnalysisScore = await calculateAverageTask;
                                         }
                                         else
                                         {
-                                            UserForm RegularUserPage = new UserForm("Regular");
-                                            RegularUserPage.UserType = databaseUserType.ToString();
-                                            RegularUserPage.Username = databaseUsername;
-                                            RegularUserPage.base64Image = databaseImage;
-                                            RegularUserPage.Show();
+                                            averageFacialAnalysisScore = 0;
                                         }
-                                        MessageBox.Show("You have successfully logged in.");
+                                        goToRealTime.UpdateLabelsForLogin("FacialAnalysisTickBox", averageFacialAnalysisScore.ToString());
+                                        float keystrokeAnalysisConfidence = 1;
+                                        //MessageBox.Show("Passwords matched");
 
-                                        if (keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
+                                        //!We want all forms of authentication to occur, so we can call all three functions here and then decide later.
+                                        //TODN FaceMatch Function
+                                        //TODN Keystroke Function
+                                        //TODO Face Liveness Function
+                                        //long confidenceScore = KeystrokeAnalysis(UserID)
+                                        if (pasteFlag == true)
                                         {
-                                            InsertKeystrokes(username, 0);
+                                            //TODN This needs to make sure the confidence score is lowered as user pasted in password
+                                            keystrokeAnalysisConfidence = 0;
+                                            goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+
+
+                                        }
+                                        if (keystrokeAnalysisConfidence == 1)
+                                        {
+                                            //Task<float> machineLearningTask = RunMachineLearningProcessAsync();
+                                            //keystrokeAnalysisConfidence = await machineLearningTask
+                                            goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
+                                            string userInputs = "Password Correct \n" + "Photos Supplied: " + photoCount.ToString() + "\nKeystroke Analysis: Complete";
+                                            goToRealTime.UpdateLabelsForLogin("UserInputs", userInputs);
+                                            //keystrokeAnalysisConfidence = 90;
+                                        }
+
+                                        /////////////////////////////////////////////////////////////////////////////
+                                        ///At this point we have all of our similarity scores, so we are able to calculate our confidence score
+                                        /////////////////////////////////////////////////////////////////////////////
+                                        ///
+                                        float finalConfidence = ((float)(averageFacialAnalysisScore * 0.5) + (float)(keystrokeAnalysisConfidence * 100 * 0.5));
+                                        Console.WriteLine("Final Confidence: " + finalConfidence);
+                                        goToRealTime.UpdateLabelsForLogin("Decision", finalConfidence.ToString());
+                                        //MessageBox.Show(highestSimilarity.ToString());
+                                        if (finalConfidence >= 0.8)
+                                        {
+                                            //TODN Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
+                                            if (databaseUserType == 1)
+                                            {
+                                                AdminForm AdminPage = new AdminForm();
+                                                AdminPage.Show();
+                                            }
+                                            else
+                                            {
+                                                UserForm RegularUserPage = new UserForm("Regular");
+                                                RegularUserPage.UserType = databaseUserType.ToString();
+                                                RegularUserPage.Username = databaseUsername;
+                                                RegularUserPage.base64Image = databaseImage;
+                                                RegularUserPage.Show();
+                                            }
+                                            MessageBox.Show("You have successfully logged in.");
+
+                                            if (keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
+                                            {
+                                                InsertKeystrokes(username, 0);
+                                            }
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Password is incorrect");
-                                    //Code for when password is incorrect
+                                    else
+                                    {
+                                        MessageBox.Show("Password is incorrect");
+                                        //Code for when password is incorrect
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            MessageBox.Show("No records found for the given ID.");
+                            else
+                            {
+                                MessageBox.Show("No records found for the given ID.");
+                            }
                         }
                     }
                 }
+            }
+            catch
+            {
+                MessageBox.Show("An error has occured, please try again later.");
             }
         }
 

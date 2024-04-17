@@ -58,7 +58,7 @@ namespace FirstGUIAttempt
             ///Username Label work
             /////////////////////////
             ///
-            UsernameLabel.Location = new Point(125,30);
+            UsernameLabel.Location = new Point(125,20);
             UsernameLabel.AutoSize = true;
             UsernameLabel.Text = "Username";
             //UsernameLabel.Font = new Font("Arial", 8);
@@ -71,7 +71,7 @@ namespace FirstGUIAttempt
             UsernameTextBox.BringToFront();
             this.Controls.Add(UsernameTextBox);
 
-            PasswordLabel.Location = new Point(125, 170);
+            PasswordLabel.Location = new Point(125, 160);
             PasswordLabel.AutoSize = true;
             PasswordLabel.Text = "Password";
             //UsernameLabel.Font = new Font("Arial", 8);
@@ -83,7 +83,14 @@ namespace FirstGUIAttempt
             PasswordTextBox.PasswordChar = '*';
             this.Controls.Add(PasswordTextBox);
 
-            PhotoLabel.Location = new Point(130, 250);
+            if(AccessibilitySettings.Font.ToString() == "OpenDyslexic 3" && Int32.Parse(AccessibilitySettings.FontSize.ToString()) >= 12)
+            {
+                PhotoLabel.Location = new Point(115, 250);
+            }
+            else
+            {
+                PhotoLabel.Location = new Point(130, 250);
+            }
             PhotoLabel.AutoSize = true;
             PhotoLabel.Text = "Photo";
             this.Controls.Add(PhotoLabel);
@@ -214,12 +221,13 @@ namespace FirstGUIAttempt
                         InsertKeystrokes(username, 0);
                     }
                     connection.Close();
-                    //TODO If unable to get database trigger to work, create stored procedure that creates the table using existing username variable
+                    //TODN If unable to get database trigger to work, create stored procedure that creates the table using existing username variable
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("An error has occured, please try again later.");
+                //MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -354,11 +362,11 @@ namespace FirstGUIAttempt
 
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Data inserted successfully into the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show("Created Successfully!.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         else
                         {
-                            MessageBox.Show("Failed to insert data into the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("An error has occured, please try again later.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
 
                     }
@@ -371,9 +379,18 @@ namespace FirstGUIAttempt
         }
     private void ApplyFontSettings()
         {
-            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
-            this.Font = font;
-            ApplyFontToControls(this.Controls, font);
+            if (AccessibilitySettings.Font == "OpenDyslexic 3")
+            {
+                Font font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
+            else
+            {
+                Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
         }
 
         private void ApplyFontToControls(Control.ControlCollection controls, Font font)
@@ -390,12 +407,10 @@ namespace FirstGUIAttempt
 
         private void InitializeWebcam()
         {
-            // Get the list of available video devices (webcams)
             FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
             if (videoDevices.Count > 0)
             {
-                // Select the first video device
                 videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
                 videoSource.NewFrame += VideoSource_NewFrame;
 
@@ -404,13 +419,13 @@ namespace FirstGUIAttempt
             }
             else
             {
-                MessageBox.Show("No video devices found.");
+                MessageBox.Show("You are unable to complete sign up without a webcam.");
             }
         }
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a clone of the current feed.
-            Size newSize = CalculateSizeToFit(originalFrame.Size, PhotoBox.ClientSize); //Creates a size variable of what the feed size is vs what the PictureBox is
+            Bitmap originalFrame = (Bitmap)eventArgs.Frame.Clone(); //Creates a duplicate
+            Size newSize = CalculateSizeToFit(originalFrame.Size, PhotoBox.ClientSize); //Creates a newsize variable that compares the wanted size vs given.
             Bitmap resizedFrame = ResizeImage(originalFrame, newSize);//Changes the video feed to have a resolution and aspect ratio to fit the picture box.
             PhotoBox.Image = resizedFrame;
 

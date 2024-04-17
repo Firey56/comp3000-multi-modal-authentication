@@ -148,3 +148,7 @@ C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.AdminForm.resources
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.AccessibilitySettings.resources
 C:\Users\alexw\OneDrive\Documents\University Work\COMP3000\Github\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\OpenDyslexic3-Regular.ttf
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\bin\Debug\OpenDyslexic3-Regular.ttf
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.AccessibilitySettings.resources
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.AdminForm.resources
+F:\University Work\Year 3\COMP3000\comp3000-multi-modal-authentication\FirstGUIAttempt\obj\Debug\FirstGUIAttempt.UserForm.resources

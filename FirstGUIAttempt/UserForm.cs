@@ -119,9 +119,18 @@ namespace FirstGUIAttempt
 
         private void ApplyFontSettings()
         {
-            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
-            this.Font = font;
-            ApplyFontToControls(this.Controls, font);
+            if (AccessibilitySettings.Font == "OpenDyslexic 3")
+            {
+                Font font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
+            else
+            {
+                Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
         }
 
         private void ApplyFontToControls(Control.ControlCollection controls, Font font)
@@ -148,7 +157,7 @@ namespace FirstGUIAttempt
             }
         }
 
-        //TODO The image currently doesn't show, suspect it is due to the picture box not being big enough.
+        //TODN The image currently doesn't show, suspect it is due to the picture box not being big enough.
         // Set other properties as needed (e.g., BackColor, BorderStyle, etc.)
         /////////////////////////////////////////////////////////////////////
         ///Added the controls, now time to actually do the page
@@ -218,7 +227,7 @@ namespace FirstGUIAttempt
             else
             {
                 if (e.KeyCode == Keys.Back)
-                {//TODO make sure this is changed so that it doesn't crash if they press backspace when empty
+                {//TODN make sure this is changed so that it doesn't crash if they press backspace when empty
                     keystrokePattern.Clear();
                     NewPassword.Text = "";
                     keyboardTimer.Stop();
@@ -245,9 +254,8 @@ namespace FirstGUIAttempt
         private void DeleteAccountButton_Click(object sender, EventArgs e)
         {
             // Your code to execute when the button is clicked
-            //TODO: Delete the account from the database. Need to make the stored procedure 
+            //TODN: Delete the account from the database. Need to make the stored procedure 
 
-            // Add your logic here...
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -286,11 +294,8 @@ namespace FirstGUIAttempt
         }
 
         private void RecoverAccountButton_Click(object sender, EventArgs e)
-        {
-            // Your code to execute when the button is clicked
-            //TODO: Delete the account from the database. Need to make the stored procedure 
-
-            // Add your logic here...
+        { 
+            //TODN: Delete the account from the database. Need to make the stored procedure 
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -330,10 +335,7 @@ namespace FirstGUIAttempt
 
         private void ChangeAdminButton_Click(object sender, EventArgs e)
         {
-            // Your code to execute when the button is clicked
-            //TODO: Delete the account from the database. Need to make the stored procedure 
-
-            // Add your logic here...
+            //TODN: Delete the account from the database. Need to make the stored procedure 
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -381,8 +383,7 @@ namespace FirstGUIAttempt
         }
         private void SubmitPasswordChange_Click(object sender, EventArgs e)
         {
-            // Your code to execute when the button is clicked
-            //TODO: Delete the account from the database. Need to make the stored procedure 
+            //TODN: Delete the account from the database. Need to make the stored procedure 
 
             string newPassword = NewPassword.Text;
             string confirmNewPassword = ConfirmNewPassword.Text;
@@ -444,7 +445,6 @@ namespace FirstGUIAttempt
                 {
                     MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                // Add your logic here...
             }
           
         }

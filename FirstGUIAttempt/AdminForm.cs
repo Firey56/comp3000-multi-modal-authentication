@@ -45,9 +45,18 @@ namespace FirstGUIAttempt
 
         private void ApplyFontSettings()
         {
-            Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
-            this.Font = font;
-            ApplyFontToControls(this.Controls, font);
+            if (AccessibilitySettings.Font == "OpenDyslexic 3")
+            {
+                Font font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
+            else
+            {
+                Font font = new Font(AccessibilitySettings.Font, AccessibilitySettings.FontSize);
+                this.Font = font;
+                ApplyFontToControls(this.Controls, font);
+            }
         }
 
         private void ApplyFontToControls(Control.ControlCollection controls, Font font)
@@ -70,12 +79,8 @@ namespace FirstGUIAttempt
                 // Open the connection
                 conn.Open();
 
-                // Define the SQL query to fetch data from the view
-
-                // Create a command object with the SQL query and connection
                 SqlCommand cmd = new SqlCommand(query, conn);
 
-                // Execute the command and obtain a data reader
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 // Iterate through the result set
@@ -87,7 +92,6 @@ namespace FirstGUIAttempt
                     string base64Image = reader["Image"].ToString();
                     string UserType = reader["UserType"].ToString();
 
-                    // Format the item text to include UserID, Username, and base64 image string
                     string itemText = $"{userID},{username},{base64Image}, {UserType}";
 
                     // Add the formatted item to the ListBox
@@ -109,13 +113,11 @@ namespace FirstGUIAttempt
 
         private void CurrentUsersListBox_DrawItem(object sender, DrawItemEventArgs e)
         {
-            // Check if the item index is valid
             if (e.Index >= 0)
             {
-                // Get the ListBox control
+                // Get the ListBox control 
                 ListBox listBox = sender as ListBox;
 
-                // Check if the ListBox control is valid
                 if (listBox != null)
                 {
                     // Set the bounds for drawing the item
@@ -125,23 +127,20 @@ namespace FirstGUIAttempt
                     e.DrawBackground();
 
                     // Draw the image of the item
-                    Image itemImage = GetImageForItem(e.Index); // Implement this method to get the image for each item
+                    Image itemImage = GetImageForItem(e.Index);
                     if (itemImage != null)
                     {
-                        // Adjust the position of the image to align with the item
-                        int imageSize = 80; // Set the desired size (width and height) for the image
+                        int imageSize = 80;
 
-                        // Calculate the position to center the image horizontally within the item
                         int imageX = bounds.Left + 10;
 
-                        // Calculate the position to center the image vertically within the item
                         int imageY = bounds.Top + (bounds.Height - imageSize) / 2;
 
                         // Draw the image at the adjusted position
                         e.Graphics.DrawImage(itemImage, imageX, imageY, imageSize, imageSize);
                     }
                     string itemText = listBox.Items[e.Index].ToString();
-                    string[] itemParts = itemText.Split(','); // Assuming the UserID and Username are separated by a character like '|'
+                    string[] itemParts = itemText.Split(',');
                     if (itemParts.Length >= 3)
                     {
                         string userID = itemParts[0];
@@ -155,17 +154,14 @@ namespace FirstGUIAttempt
                         {
                             UserType = "Admin";
                         }
-                        // Set the position and font for drawing the text
-                        int textX = bounds.Left + 90; // Adjust this value as needed
-                        int textY = bounds.Top + 10; // Adjust this value as needed
+                        int textX = bounds.Left + 90; 
+                        int textY = bounds.Top + 10; 
                         Font textFont = listBox.Font;
 
-                        // Draw the text (UserID and Username)
                         e.Graphics.DrawString("UserID: " + userID, textFont, Brushes.Black, textX, textY);
-                        e.Graphics.DrawString("Username: " + username, textFont, Brushes.Black, textX, textY + 20); // Add some vertical spacing between UserID and Username
-                        e.Graphics.DrawString("User Type: " + UserType, textFont, Brushes.Black, textX, textY + 40); // Add some vertical spacing between UserID and Username
+                        e.Graphics.DrawString("Username: " + username, textFont, Brushes.Black, textX, textY + 20); 
+                        e.Graphics.DrawString("User Type: " + UserType, textFont, Brushes.Black, textX, textY + 40); 
                     }
-                    // Indicate that the drawing is complete
                     e.DrawFocusRectangle();
                 }
             }
@@ -178,61 +174,49 @@ namespace FirstGUIAttempt
             // Get the ListBox control
             ListBox listBox = CurrentUsersListBox;
 
-            // Check if the ListBox control is valid and if the index is within bounds
             if (listBox != null && index >= 0 && index < listBox.Items.Count)
             {
-                // Get the base64 string from the ListBox item
                 string[] rowArray = listBox.Items[index].ToString().Split(',');
-                string base64string = rowArray[2];
+                string base64string = rowArray[2];//This selects the image
 
-                // Convert the base64 string to bytes
                 byte[] imageBytes = Convert.FromBase64String(base64string);
 
-                // Create a MemoryStream from the bytes
-                using (MemoryStream ms = new MemoryStream(imageBytes))
+                using (MemoryStream ImageStream = new MemoryStream(imageBytes))
                 {
                     // Create an Image from the MemoryStream
-                    return Image.FromStream(ms);
+                    return Image.FromStream(ImageStream);
                 }
             }
 
-            return null; // Return null if index is out of bounds or ListBox is invalid
+            return null;
         }
         private void DeletedUsersListBox_DrawItem(object sender, DrawItemEventArgs e)
         {
-            // Check if the item index is valid
             if (e.Index >= 0)
             {
-                // Get the ListBox control
+                // Get the control
                 ListBox listBox = sender as ListBox;
 
-                // Check if the ListBox control is valid
                 if (listBox != null)
                 {
-                    // Set the bounds for drawing the item
+
                     Rectangle bounds = e.Bounds;
 
-                    // Draw the background of the item
                     e.DrawBackground();
 
-                    // Draw the image of the item
-                    Image itemImage = GetImageForItemDeletedUsers(e.Index); // Implement this method to get the image for each item
+                    Image itemImage = GetImageForItemDeletedUsers(e.Index);
                     if (itemImage != null)
                     {
-                        // Adjust the position of the image to align with the item
-                        int imageSize = 80; // Set the desired size (width and height) for the image
+                        int imageSize = 80;
 
-                        // Calculate the position to center the image horizontally within the item
                         int imageX = bounds.Left + 10;
 
-                        // Calculate the position to center the image vertically within the item
                         int imageY = bounds.Top + (bounds.Height - imageSize) / 2;
 
-                        // Draw the image at the adjusted position
                         e.Graphics.DrawImage(itemImage, imageX, imageY, imageSize, imageSize);
                     }
                     string itemText = listBox.Items[e.Index].ToString();
-                    string[] itemParts = itemText.Split(','); // Assuming the UserID and Username are separated by a character like '|'
+                    string[] itemParts = itemText.Split(',');
                     if (itemParts.Length >= 3)
                     {
                         string userID = itemParts[0];
@@ -246,15 +230,13 @@ namespace FirstGUIAttempt
                         {
                             UserType = "Admin";
                         }
-                        // Set the position and font for drawing the text
-                        int textX = bounds.Left + 90; // Adjust this value as needed
-                        int textY = bounds.Top + 10; // Adjust this value as needed
+                        int textX = bounds.Left + 90;
+                        int textY = bounds.Top + 10;
                         Font textFont = listBox.Font;
 
-                        // Draw the text (UserID and Username)
                         e.Graphics.DrawString("UserID: " + userID, textFont, Brushes.Black, textX, textY);
-                        e.Graphics.DrawString("Username: " + username, textFont, Brushes.Black, textX, textY + 20); // Add some vertical spacing between UserID and Username
-                        e.Graphics.DrawString("User Type: " + UserType, textFont, Brushes.Black, textX, textY + 40); // Add some vertical spacing between UserID and Username
+                        e.Graphics.DrawString("Username: " + username, textFont, Brushes.Black, textX, textY + 20);
+                        e.Graphics.DrawString("User Type: " + UserType, textFont, Brushes.Black, textX, textY + 40);
                     }
                     // Indicate that the drawing is complete
                     e.DrawFocusRectangle();
@@ -266,28 +248,23 @@ namespace FirstGUIAttempt
 
         private Image GetImageForItemDeletedUsers(int index)
         {
-            // Get the ListBox control
+            // Get the control
             ListBox listBox = DeletedUsersListBox;
 
-            // Check if the ListBox control is valid and if the index is within bounds
             if (listBox != null && index >= 0 && index < listBox.Items.Count)
             {
-                // Get the base64 string from the ListBox item
                 string[] rowArray = listBox.Items[index].ToString().Split(',');
-                string base64string = rowArray[2];
+                string base64string = rowArray[2];//Select the image string
 
-                // Convert the base64 string to bytes
                 byte[] imageBytes = Convert.FromBase64String(base64string);
 
-                // Create a MemoryStream from the bytes
-                using (MemoryStream ms = new MemoryStream(imageBytes))
+                using (MemoryStream ImageStream = new MemoryStream(imageBytes))
                 {
-                    // Create an Image from the MemoryStream
-                    return Image.FromStream(ms);
+                    return Image.FromStream(ImageStream);
                 }
             }
 
-            return null; // Return null if index is out of bounds or ListBox is invalid
+            return null; 
         }
 
         private void CurrentUsersListBox_DoubleClick(object sender, EventArgs e)
@@ -341,8 +318,6 @@ namespace FirstGUIAttempt
         }
         private void UserForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            // Perform the desired action here
-            // For example, show a message box or update some UI element in Form1
             CurrentUsersListBox.Items.Clear();
             DeletedUsersListBox.Items.Clear();
             LoadDataIntoListBox("SELECT * FROM Authentication.AllUsersView", "CurrentUsers");
