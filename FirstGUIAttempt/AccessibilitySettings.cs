@@ -39,7 +39,7 @@ namespace FirstGUIAttempt
             ExampleText.Text = "The quick brown fox jumped over the lazy dog";
             this.Controls.Add(ExampleText);
             SaveAccessibility.Click += SaveAccessibility_Click;
-            this.ClientSize = new System.Drawing.Size(600, 500);
+            this.ClientSize = new System.Drawing.Size(600, 300);
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
             FontSizeStart.Text = FontSizeTrackBar.Minimum.ToString();

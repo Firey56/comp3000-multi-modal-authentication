@@ -679,8 +679,8 @@ namespace FirstGUIAttempt
                                         //TODO Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
                                         if(databaseUserType == 1)
                                         {
-                                            AdminForm AdminPage = new AdminForm();
-                                            AdminPage.Show();   
+                                            //AdminForm AdminPage = new AdminForm();
+                                            //AdminPage.Show();   
                                         }
                                         else
                                         {
