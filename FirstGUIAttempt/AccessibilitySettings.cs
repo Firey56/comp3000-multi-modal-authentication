@@ -115,7 +115,6 @@ namespace FirstGUIAttempt
 
 
         }
-
         private void FontSizeTrackBar_Scroll(object sender, EventArgs e)
         {
             // Get the current value of the TrackBar

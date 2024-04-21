@@ -17,7 +17,7 @@ namespace FirstGUIAttempt
         private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
 
         //private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
-        public AdminForm()
+        public AdminForm(NewSignInForm.Session currentSession)
         {
             InitializeComponent();
             ApplyFontSettings();
@@ -36,8 +36,12 @@ namespace FirstGUIAttempt
             DeletedUsersListBox.Size = new Size(350, 500);
             CurrentUsersListBox.Location = new Point(50, 50);
             DeletedUsersListBox.Location = new Point(450, 50);
-            CurrentUsersListBox.DoubleClick += CurrentUsersListBox_DoubleClick;
-            DeletedUsersListBox.DoubleClick += DeletedUsersListBox_DoubleClick;
+            if(currentSession.Confidence > 90)
+            {
+                CurrentUsersListBox.DoubleClick += CurrentUsersListBox_DoubleClick;
+                DeletedUsersListBox.DoubleClick += DeletedUsersListBox_DoubleClick;
+            }
+            
             LoadDataIntoListBox("SELECT * FROM Authentication.AllUsersView", "CurrentUsers");
             LoadDataIntoListBox("SELECT * FROM Authentication.AllDeletedUsersView", "DeletedUsers");
             

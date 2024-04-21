@@ -22,14 +22,6 @@ using System.Threading;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Drawing.Text;
-//Is there any design patterns within this code?
-//Yes, the code uses the Singleton pattern. This is because the code is designed to only have one instance of the form open at a time. This is to prevent multiple instances of the form being opened and causing issues with the webcam feed. This is done by creating a static instance of the form and then checking if the form is null before creating a new instance. If the form is not null, then the existing form is shown. This ensures that only one instance of the form is open at a time.
-//Are there any other design patterns?
-//The code also uses the Observer pattern. This is because the code uses events to notify the form when certain actions occur. For example, when the user clicks the submit button, an event is raised which triggers the UserSubmit method. This allows the form to respond to user actions without having to constantly check for changes. This makes the code more modular and easier to maintain.
-//Any others?
-//The code also uses the Factory pattern. This is because the code uses a factory method to create instances of the RealTimeForm class. The factory method takes in parameters such as the username and password, and then creates a new instance of the RealTimeForm class with the specified parameters. This allows the code to create instances of the RealTimeForm class without having to know the specific details of how the class is created. This makes the code more flexible and easier to maintain.
-//Any more?
-//The code also uses the Strategy pattern. This is because the code uses different strategies to authenticate the user. For example, the code uses facial recognition, keystroke analysis, and password verification to authenticate the user. Each of these strategies is implemented as a separate method, and the code selects the appropriate strategy based on the user's input. This allows the code to 
 namespace FirstGUIAttempt
 {
     public partial class NewSignInForm : Form
@@ -98,6 +90,10 @@ namespace FirstGUIAttempt
             SubmitButton.AutoSize = true;
             SubmitButton.Text = "Submit";
             this.Controls.Add(SubmitButton);
+        }
+        public class Session {      
+            public int UserID { get; set; }
+            public float Confidence { get; set; }
         }
         private void Submit(object sender, EventArgs e)
         {
@@ -627,16 +623,22 @@ namespace FirstGUIAttempt
                                         Console.WriteLine("Final Confidence: " + finalConfidence);
                                         goToRealTime.UpdateLabelsForLogin("Decision", finalConfidence.ToString());
                                         //MessageBox.Show(highestSimilarity.ToString());
+                                        Session currentSession = new Session
+                                        {
+                                            UserID = UserID,
+                                            Confidence = finalConfidence
+                                        };
                                         if (finalConfidence >= 0.8)
                                         {
                                             //TODN Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
                                             if (databaseUserType == 1)
                                             {
-                                                AdminForm AdminPage = new AdminForm();
+                                                AdminForm AdminPage = new AdminForm(currentSession);
                                                 AdminPage.Show();
                                             }
                                             else
                                             {
+                                                
                                                 UserForm RegularUserPage = new UserForm("Regular");
                                                 RegularUserPage.UserType = databaseUserType.ToString();
                                                 RegularUserPage.Username = databaseUsername;
