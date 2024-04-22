@@ -121,7 +121,7 @@ namespace FirstGUIAttempt
         {
             if (AccessibilitySettings.Font == "OpenDyslexic 3")
             {
-                Font font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
+                Font font = new Font(AuthenticationModel.OpenDyslexic.Families[0], AccessibilitySettings.FontSize);
                 this.Font = font;
                 ApplyFontToControls(this.Controls, font);
             }

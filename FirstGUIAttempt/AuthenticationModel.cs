@@ -15,11 +15,11 @@ using AForge.Video.DirectShow;
 
 namespace FirstGUIAttempt
 {
-    public partial class FirstGUIAttempt : Form
+    public partial class AuthenticationModel : Form
     {
         private LinkLabel AccessibilitySettingsText = new LinkLabel();
         public static PrivateFontCollection OpenDyslexic { get; set; } = new PrivateFontCollection();
-        public FirstGUIAttempt()
+        public AuthenticationModel()
         {
             InitializeComponent();
             LoadCustomFont("OpenDyslexic3-Regular");

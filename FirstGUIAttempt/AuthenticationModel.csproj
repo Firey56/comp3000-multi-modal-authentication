@@ -6,12 +6,27 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D838B1BA-7A43-4C90-B63F-09EE6E1BF39A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>FirstGUIAttempt</RootNamespace>
-    <AssemblyName>FirstGUIAttempt</AssemblyName>
+    <RootNamespace>AuthenticationModel</RootNamespace>
+    <AssemblyName>AuthenticationModel</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -123,17 +138,11 @@
       <DependentUpon>AccessibilitySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Common.cs" />
-    <Compile Include="FirstGUIAttempt.cs">
+    <Compile Include="AuthenticationModel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FirstGUIAttempt.Designer.cs">
-      <DependentUpon>FirstGUIAttempt.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IntermediatePage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="IntermediatePage.Designer.cs">
-      <DependentUpon>IntermediatePage.cs</DependentUpon>
+    <Compile Include="AuthenticationModel.Designer.cs">
+      <DependentUpon>AuthenticationModel.cs</DependentUpon>
     </Compile>
     <Compile Include="NewSignInForm.cs">
       <SubType>Form</SubType>
@@ -147,20 +156,8 @@
     <Compile Include="RealTimeForm.Designer.cs">
       <DependentUpon>RealTimeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SignInPage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SignInPage.Designer.cs">
-      <DependentUpon>SignInPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SignUpForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SignUpForm.Designer.cs">
-      <DependentUpon>SignUpForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="AdminForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -182,11 +179,8 @@
     <EmbeddedResource Include="AccessibilitySettings.resx">
       <DependentUpon>AccessibilitySettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FirstGUIAttempt.resx">
-      <DependentUpon>FirstGUIAttempt.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="IntermediatePage.resx">
-      <DependentUpon>IntermediatePage.cs</DependentUpon>
+    <EmbeddedResource Include="AuthenticationModel.resx">
+      <DependentUpon>AuthenticationModel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -196,15 +190,10 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RealTimeForm.resx">
       <DependentUpon>RealTimeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SignInPage.resx">
-      <DependentUpon>SignInPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SignUpForm.resx">
-      <DependentUpon>SignUpForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AdminForm.resx">
       <DependentUpon>AdminForm.cs</DependentUpon>
@@ -235,6 +224,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MetroFramework.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

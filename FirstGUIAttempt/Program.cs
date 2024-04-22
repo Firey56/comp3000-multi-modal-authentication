@@ -16,7 +16,7 @@ namespace FirstGUIAttempt
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FirstGUIAttempt());
+            Application.Run(new AuthenticationModel());
         }
     }
 }

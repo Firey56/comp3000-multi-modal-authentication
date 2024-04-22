@@ -110,7 +110,7 @@ namespace FirstGUIAttempt
             }
             else
             {
-                ExampleText.Font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], currentFontSize);
+                ExampleText.Font = new Font(AuthenticationModel.OpenDyslexic.Families[0], currentFontSize);
             }
 
 
@@ -167,7 +167,7 @@ namespace FirstGUIAttempt
             }
             else
             {
-                ExampleText.Font = new Font(FirstGUIAttempt.OpenDyslexic.Families[0], tempFontSize);
+                ExampleText.Font = new Font(AuthenticationModel.OpenDyslexic.Families[0], tempFontSize);
             }
    
         }
@@ -201,7 +201,7 @@ namespace FirstGUIAttempt
             
             if(tempFont == "OpenDyslexic 3")
             {
-                ExampleText.Font= new Font(FirstGUIAttempt.OpenDyslexic.Families[0], tempFontSize);
+                ExampleText.Font= new Font(AuthenticationModel.OpenDyslexic.Families[0], tempFontSize);
             }
             else
             {

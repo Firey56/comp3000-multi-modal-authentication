@@ -3,7 +3,7 @@
     using System.Windows.Forms;
     using System.Drawing;
     using System;
-    partial class FirstGUIAttempt
+    partial class AuthenticationModel
     {
         /// <summary>
         /// Required designer variable.
