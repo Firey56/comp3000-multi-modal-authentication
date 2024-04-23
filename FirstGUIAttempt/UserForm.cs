@@ -441,7 +441,6 @@ namespace FirstGUIAttempt
 
             string newPassword = NewPassword.Text;
             string confirmNewPassword = ConfirmNewPassword.Text;
-
             if(newPassword == confirmNewPassword)
             {
                 if (finalKeystrokePattern.Count == 0)

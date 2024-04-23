@@ -624,7 +624,7 @@ namespace FirstGUIAttempt
                                         ///At this point we have all of our similarity scores, so we are able to calculate our confidence score
                                         /////////////////////////////////////////////////////////////////////////////
                                         ///
-                                        float finalConfidence = ((float)(averageFacialAnalysisScore * 0.5) + (float)(keystrokeAnalysisConfidence * 100 * 0.5));
+                                        float finalConfidence = ((float)(averageFacialAnalysisScore * 0.6) + (float)(keystrokeAnalysisConfidence * 100 * 0.4));
                                         Console.WriteLine("Final Confidence: " + finalConfidence);
                                         goToRealTime.UpdateLabelsForLogin("Decision", finalConfidence.ToString());
                                         //MessageBox.Show(highestSimilarity.ToString());
@@ -654,7 +654,7 @@ namespace FirstGUIAttempt
                                             }
                                             MessageBox.Show("You have successfully logged in.");
 
-                                            if (keystrokeAnalysisConfidence > 0.1)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
+                                            if (keystrokeAnalysisConfidence > 0.7)//TODO This needs to be changed to a higher value, this is just temporary to get some values in.
                                             {
                                                 InsertKeystrokes(username, 0);
                                             }
