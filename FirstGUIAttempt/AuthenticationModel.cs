@@ -19,9 +19,12 @@ namespace FirstGUIAttempt
     {
         private LinkLabel AccessibilitySettingsText = new LinkLabel();
         public static PrivateFontCollection OpenDyslexic { get; set; } = new PrivateFontCollection();
+        private bool isSignInActive = false;
+        private bool isSignUpActive = false;
         public AuthenticationModel()
         {
             InitializeComponent();
+            this.Text = "Authentication Model";
             LoadCustomFont("OpenDyslexic3-Regular");
             AccessibilitySettingsText.Text = "Accessibility Settings";
             AccessibilitySettingsText.Location = new Point(230, 350);
@@ -36,10 +39,21 @@ namespace FirstGUIAttempt
         }
         private void signIn_Click(object sender, EventArgs e)
         {
-            var goToSignIn = new NewSignInForm();
-            goToSignIn.Show();
+            if (!isSignInActive)
+            {
+                if (!isSignUpActive)
+                {
+                    isSignInActive = true;
+                    var goToSignIn = new NewSignInForm();
+                    goToSignIn.FormClosed += goToSignIn_FormClosed;
+                    goToSignIn.Show();
+                }
+                
+            }
+   
+            
         }
-
+       
         private void signUp_Click(object sender, EventArgs e)
         {
             FilterInfoCollection Webcams = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -49,11 +63,31 @@ namespace FirstGUIAttempt
             }
             else
             {
-                var goToSignUp = new NewSignUpForm();
-                goToSignUp.Show();
+                if (!isSignUpActive)
+                {
+                    if (!isSignUpActive)
+                    {
+                        isSignUpActive = true;
+                        var goToSignUp = new NewSignUpForm();
+                        goToSignUp.FormClosed += goToSignUp_FormClosed;
+                        goToSignUp.Show();
+                    }
+                    
+                }
+               
             }
             
 
+        }
+
+        private void goToSignIn_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            isSignInActive = false;
+        }
+
+        private void goToSignUp_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            isSignUpActive = false;
         }
         private static void LoadCustomFont(string fontFileName)
         {

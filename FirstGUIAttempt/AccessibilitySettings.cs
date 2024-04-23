@@ -31,6 +31,7 @@ namespace FirstGUIAttempt
         public AccessibilitySettings()
         {
             InitializeComponent();
+            this.Text = "Accessibility Settings";
             FontSizeTrackBar.Scroll += FontSizeTrackBar_Scroll;
             FontTrackBar.Scroll += FontTrackBar_Scroll;
             ExampleText.AutoSize = true;

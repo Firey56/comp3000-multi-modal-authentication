@@ -33,7 +33,7 @@ namespace FirstGUIAttempt
         {
             InitializeComponent();
             ApplyFontSettings();
-
+            this.Text = "Real Time Form";
             int screenWidth = Screen.PrimaryScreen.Bounds.Width;
             int screenHeight = Screen.PrimaryScreen.Bounds.Height;
             int xSize = 1080;
@@ -236,15 +236,17 @@ namespace FirstGUIAttempt
                     }
                     break;
                 case "FacialAnalysisTickBox":
-                    if (float.Parse(data) >= 0.6)
+                    if (float.Parse(data) >= 60)
                     {
                         FacialAnalysisTickBox.Text = "✔";
-                        FacialAnalysisChangingLabel.Text = data;
+                        FacialAnalysisChangingLabel.Text = data + "%";
+
                     }
                     else
                     {
                         FacialAnalysisTickBox.Text = "✘";
-                        FacialAnalysisChangingLabel.Text = data;
+                        float percentage = float.Parse(data) * 100;
+                        FacialAnalysisChangingLabel.Text = percentage.ToString() + "^";
                     }
 
                     break;
@@ -252,19 +254,19 @@ namespace FirstGUIAttempt
                     if (float.Parse(data) >= 0.6)
                     {
                         KeystrokeAnalysisTickBox.Text = "✔";
-                        MetroKeystrokeAnalysisChangingLabel.Text = data;
+                        MetroKeystrokeAnalysisChangingLabel.Text = float.Parse(data) * 100 + "%";
                     }
                     else
                     {
                         KeystrokeAnalysisTickBox.Text = "✘";
-                        MetroKeystrokeAnalysisChangingLabel.Text = data;
+                        MetroKeystrokeAnalysisChangingLabel.Text = float.Parse(data)*100 + "%";
                     }
                     break;
                 case "Decision":
-                    if(float.Parse(data) > 0.8)
+                    if(float.Parse(data) > 70)
                     {
                         DecisionTickBox.Text = "✔";
-                        DecisionChangingLabel.Text = data;
+                        DecisionChangingLabel.Text = data + "%";
                     }
                     else
                     {

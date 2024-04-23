@@ -38,9 +38,9 @@ namespace FirstGUIAttempt
         readonly static Stopwatch keyboardTimer = new Stopwatch();
         readonly static List<string> finalKeystrokePattern = new List<string>();
         //private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
-        private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        //private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
 
-        //private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
+        private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
         public int InteractingUserType { get; set; }
         public string UserID { get; set; }
         public string Username { get; set; }
@@ -51,12 +51,23 @@ namespace FirstGUIAttempt
             InitializeComponent();
 
             ApplyFontSettings();
-            UsernameLabel.Location = new Point(250, 150);
+            if(AccessibilitySettings.Font == "OpenDyslexic 3" && AccessibilitySettings.FontSize >= 10)
+            {
+                UsernameLabel.Location = new Point(250, 100);
+                UsernameChanging.Location = new Point(250, 140);
+            }
+            else
+            {
+                UsernameLabel.Location = new Point(250, 140);
+                UsernameChanging.Location = new Point(250, 170);
+            }
+            this.Text = "User Form";    
+           
             UsernameLabel.AutoSize = true;
             UsernameLabel.Text = "Username";
             this.Controls.Add(UsernameLabel);
 
-            UsernameChanging.Location = new Point(250, 170);
+            
             UsernameChanging.AutoSize = true;
             this.Controls.Add(UsernameChanging);
             NewPassword.KeyDown += NewPassword_KeyPress;
@@ -64,33 +75,56 @@ namespace FirstGUIAttempt
 
             if (ListBoxSentFrom == "Current")
                 {
-                    DeleteAccountButton.Location = new Point(180, 460);
+                if(AccessibilitySettings.Font == "OpenDyslexic 3" && AccessibilitySettings.FontSize >= 10)
+                {
+                    DeleteAccountButton.Location = new Point(0, 450);
+                    ChangeAdminButton.Location = new Point(300, 450);
+                }
+                else
+                {
+                    ChangeAdminButton.Location = new Point(320, 460);
+                    DeleteAccountButton.Location = new Point(100, 460);
+                }
+                    
                     DeleteAccountButton.AutoSize = true;
                     DeleteAccountButton.Text = "Delete Account";
-                    ChangeAdminButton.Location = new Point(320, 460);
+                    
                     ChangeAdminButton.AutoSize = true;
                     ChangeAdminButton.Text = "Change Admin Status";
                     current = true;
                 }
                 else
                 {
-                    RecoverAccountButton.Location = new Point(250, 460);
+                RecoverAccountButton.Location = new Point(250, 460);
                 RecoverAccountButton.AutoSize = true;
                 RecoverAccountButton.Text = "Recover Account";
                     current = false;
                 }
 
-            NewPassword.Location = new Point(250, 220);
+            if (AccessibilitySettings.Font == "OpenDyslexic 3" && AccessibilitySettings.FontSize >= 10)
+            {
+                NewPassword.Location = new Point(255, 220);
+                NewPasswordLabel.Location = new Point(250, 180);
+                ConfirmNewPassword.Location = new Point(255, 320);
+                ConfirmNewPasswordLabel.Location = new Point(250, 270);
+            }
+            else
+            {
+                NewPassword.Location = new Point(250, 230);
+                NewPasswordLabel.Location = new Point(250, 200);
+                ConfirmNewPassword.Location = new Point(250, 310);
+                ConfirmNewPasswordLabel.Location = new Point(250, 280);
+            }
             NewPassword.AutoSize = true;
             NewPassword.PasswordChar=  '*';
-            NewPasswordLabel.Location = new Point(250, 200);
+            
             NewPasswordLabel.AutoSize = true;
             NewPasswordLabel.Text = "New Password";
 
-            ConfirmNewPassword.Location = new Point(250, 280);
+            
             ConfirmNewPassword.AutoSize = true;
             ConfirmNewPassword.PasswordChar = '*';
-            ConfirmNewPasswordLabel.Location = new Point(250, 260);
+
             ConfirmNewPasswordLabel.AutoSize = true;
             ConfirmNewPasswordLabel.Text = "Confirm New Password";
 
@@ -177,20 +211,40 @@ namespace FirstGUIAttempt
             UserTypeChanging.Text = UserType;
             if(InteractingUserType == 1)
             {
-                UserIDLabel.Location = new Point(250, 200);
+                if(AccessibilitySettings.Font == "OpenDyslexic 3" && AccessibilitySettings.FontSize >= 10)
+                {
+                    UserIDLabel.Location = new Point(250, 180);
+                    UserIDChanging.Location = new Point(250, 210);
+                }
+                else
+                {
+                    UserIDLabel.Location = new Point(250, 200);
+                    UserIDChanging.Location = new Point(250, 230);
+                }
+                
                 UserIDLabel.AutoSize = true;
                 UserIDLabel.Text = "User ID";
                 this.Controls.Add(UserIDLabel);
-                UserIDChanging.Location = new Point(250, 220);
+                
                 UserIDChanging.AutoSize = true;
                 this.Controls.Add(UserIDChanging);
 
 
-                UserTypeLabel.Location = new Point(250, 240);
+                
                 UserTypeLabel.AutoSize = true;
                 UserTypeLabel.Text = "User Type";
                 this.Controls.Add(UserTypeLabel);
-                UserTypeChanging.Location = new Point(250, 260);
+                if(AccessibilitySettings.Font == "OpenDyslexic 3" && AccessibilitySettings.FontSize >= 10)
+                {
+                    UserTypeChanging.Location = new Point(240, 300);
+                    UserTypeLabel.Location = new Point(250, 260);
+                }
+                else
+                {
+                    UserTypeLabel.Location = new Point(250, 250);
+                    UserTypeChanging.Location = new Point(240, 280);
+                }
+                
                 UserTypeChanging.AutoSize = true;
                 this.Controls.Add(UserTypeChanging);
                 if (current)

@@ -14,9 +14,10 @@ namespace FirstGUIAttempt
 {
     public partial class AdminForm : Form
     {
-        private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
-
-        //private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
+        //private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        private Label CurrentUsersLabel = new Label();
+        private Label DeletedUsersLabel = new Label();
+        private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
         public AdminForm(NewSignInForm.Session currentSession)
         {
             InitializeComponent();
@@ -24,6 +25,7 @@ namespace FirstGUIAttempt
             this.ClientSize = new Size(900, 500);
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
+            this.Text = "Admin Form";
             // Set up the ListBox
             CurrentUsersListBox.DrawMode = DrawMode.OwnerDrawFixed;
             CurrentUsersListBox.DrawItem += CurrentUsersListBox_DrawItem;
@@ -36,7 +38,16 @@ namespace FirstGUIAttempt
             DeletedUsersListBox.Size = new Size(350, 500);
             CurrentUsersListBox.Location = new Point(50, 50);
             DeletedUsersListBox.Location = new Point(450, 50);
-            if(currentSession.Confidence > 90)
+
+            CurrentUsersLabel.Text = "Current Users";
+            CurrentUsersLabel.Location = new Point(50, 20);
+            CurrentUsersLabel.AutoSize = true;
+            DeletedUsersLabel.Text = "Deleted Users";
+            DeletedUsersLabel.Location = new Point(450, 20);
+            DeletedUsersLabel.AutoSize = true;
+            this.Controls.Add(CurrentUsersLabel);
+            this.Controls.Add(DeletedUsersLabel);
+            if(currentSession.Confidence > 80)
             {
                 CurrentUsersListBox.DoubleClick += CurrentUsersListBox_DoubleClick;
                 DeletedUsersListBox.DoubleClick += DeletedUsersListBox_DoubleClick;

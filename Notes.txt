@@ -33,7 +33,6 @@ Give multiple confidence scores - return confidence score based off the differen
 Use of feature vectors instead of storing b64 image.
 
 
-https://loading.io/
 
 Colour Scheme:
 #7A918D

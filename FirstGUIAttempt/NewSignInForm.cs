@@ -34,9 +34,9 @@ namespace FirstGUIAttempt
         private Button SubmitButton = new Button();
 
         private VideoCaptureDevice videoSource;
-        private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
+        //private string connectionString = "Data Source=localhost;Initial Catalog=Users;Integrated Security=True";
         //private string connectionString = "Server=tcp:finalyearproject.database.windows.net,1433;Initial Catalog=MultiModalAuthentication;Persist Security Info=False;User ID=finalyearprojectadmin;Password=h2B&e3Hvs$%bDsk@Vgp4Yf5&F;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-        //private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
+        private string connectionString = "Server=dissi-database.c32y6sk2evqy.eu-west-2.rds.amazonaws.com;Database=Dissertation;User ID=admin;Password=V4F^E2Tt#M#p#bjj;Encrypt=true;TrustServerCertificate=true;Connection Timeout=30;";
         List<string> comparisonImageBase64 = new List<string>();
         static List<long> keystrokePattern = new List<long>();
         static Stopwatch keyboardTimer = new Stopwatch();
@@ -56,7 +56,7 @@ namespace FirstGUIAttempt
             PasswordTextBox.KeyDown += Password_KeyPress;
             PasswordTextBox.TextChanged += PasswordTextBox_TextChanged;
             SubmitButton.Click += Submit;
-
+            this.Text = "Sign In";
             this.ClientSize = new Size(600, 500);
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
@@ -147,6 +147,11 @@ namespace FirstGUIAttempt
 
         private void UserSubmit()
         {
+            if (videoSource != null && videoSource.IsRunning)
+            {
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
+            }
             string usernameInput = UsernameTextBox.Text;
             string hashedPassword = HashPassword(PasswordTextBox.Text);
             //Makes the list of the timings of the keystroke
@@ -167,7 +172,7 @@ namespace FirstGUIAttempt
 
                 }
             }
-            if (usernameInput != null && hashedPassword != null)
+            if (usernameInput != "" && PasswordTextBox.Text != null)
             {
                 // MessageBox.Show("We are inside the SubmitButton function");
                 foreach (string value in finalKeystrokePattern)
@@ -607,8 +612,8 @@ namespace FirstGUIAttempt
                                         }
                                         if (keystrokeAnalysisConfidence == 1)
                                         {
-                                            //Task<float> machineLearningTask = RunMachineLearningProcessAsync();
-                                            //keystrokeAnalysisConfidence = await machineLearningTask
+                                            Task<float> machineLearningTask = RunMachineLearningProcessAsync();
+                                            keystrokeAnalysisConfidence = await machineLearningTask;
                                             goToRealTime.UpdateLabelsForLogin("KeystrokeAnalysisTickBox", keystrokeAnalysisConfidence.ToString());
                                             string userInputs = "Password Correct \n" + "Photos Supplied: " + photoCount.ToString() + "\nKeystroke Analysis: Complete";
                                             goToRealTime.UpdateLabelsForLogin("UserInputs", userInputs);
@@ -628,12 +633,13 @@ namespace FirstGUIAttempt
                                             UserID = UserID,
                                             Confidence = finalConfidence
                                         };
-                                        if (finalConfidence >= 0.8)
+                                        if (finalConfidence >= 70)
                                         {
                                             //TODN Need a conditional here, check whether the UserType is a 0 or 1 to define what page is openeed next
                                             if (databaseUserType == 1)
                                             {
                                                 AdminForm AdminPage = new AdminForm(currentSession);
+                                                this.Close();
                                                 AdminPage.Show();
                                             }
                                             else
@@ -643,6 +649,7 @@ namespace FirstGUIAttempt
                                                 RegularUserPage.UserType = databaseUserType.ToString();
                                                 RegularUserPage.Username = databaseUsername;
                                                 RegularUserPage.base64Image = databaseImage;
+                                                this.Close();
                                                 RegularUserPage.Show();
                                             }
                                             MessageBox.Show("You have successfully logged in.");
@@ -651,6 +658,10 @@ namespace FirstGUIAttempt
                                             {
                                                 InsertKeystrokes(username, 0);
                                             }
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("You have failed to log in.");
                                         }
                                     }
                                     else
@@ -775,7 +786,7 @@ namespace FirstGUIAttempt
 
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Data inserted successfully into the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            //MessageBox.Show("Data inserted successfully into the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         else
                         {

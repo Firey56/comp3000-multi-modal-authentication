@@ -64,7 +64,7 @@ connectionString = pyodbc.connect(
 # Create a cursor object
 cursor = connectionString.cursor()
 # Execute the view
-cursor.execute("EXEC dissertation.GetKeystrokes @TableName=?", (username))
+cursor.execute("EXEC Authentication.GetKeystrokes @TableName=?", (username))
 # Fetch all rows
 rows = cursor.fetchall()
     #print(eachRow)
