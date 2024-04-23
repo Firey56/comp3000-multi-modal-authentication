@@ -59,3 +59,9 @@ There are several editable parameters within the application to change for user 
  - RealTimeForm.cs </br>
     - UpdateLabelsForLogin()
       - Switch Case: data.Parse - this checks what the confidence rating is for each modality. Facial Recognition and Keystroke Analysis set to 60%, Decision for Authentication set to 70%.
+
+### MachineLearningModel.py
+
+ - New Pattern
+     - newRandom - The amount of standard deviations that will be added, currently random between -2 and 2.
+     - noise - The amount of random noise that will be added to the keystroke pair, currently between -20 and 20.
